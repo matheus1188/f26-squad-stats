@@ -44,7 +44,7 @@ export function AppLayout({ children, title, subtitle, action }: {
             return (
               <Link
                 key={item.to}
-                to={item.to}
+                to={item.to as never}
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
                   active
@@ -86,7 +86,7 @@ export function AppLayout({ children, title, subtitle, action }: {
             return (
               <Link
                 key={item.to}
-                to={item.to}
+                to={item.to as never}
                 className={cn(
                   "flex flex-col items-center justify-center gap-1 py-1.5 rounded-xl text-[10px] font-medium transition-all",
                   item.primary && "bg-primary text-primary-foreground pulse-glow",
