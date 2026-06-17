@@ -3,7 +3,15 @@ import { LayoutDashboard, Users, Shield, Swords, History, Trophy, BarChart3 } fr
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-const nav = [
+type NavItem = {
+  to: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  exact?: boolean;
+  primary?: boolean;
+};
+
+const nav: NavItem[] = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/players", label: "Players", icon: Users },
   { to: "/teams", label: "Teams", icon: Shield },
@@ -11,7 +19,7 @@ const nav = [
   { to: "/matches", label: "History", icon: History },
   { to: "/ranking", label: "Ranking", icon: Trophy },
   { to: "/stats", label: "Stats", icon: BarChart3 },
-] as const;
+];
 
 export function AppLayout({ children, title, subtitle, action }: {
   children: ReactNode;
