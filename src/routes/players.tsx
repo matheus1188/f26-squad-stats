@@ -124,11 +124,6 @@ function PlayerDialog({ open, onOpenChange, player }: { open: boolean; onOpenCha
   const [name, setName] = useState(player?.name ?? "");
   const [avatar, setAvatar] = useState(player?.avatar_url ?? "");
 
-  // sync on open
-  useState(() => {});
-  if (open && player?.id && name === "" && avatar === "") {
-    // initialize once when dialog opens with player
-  }
 
   const save = useMutation({
     mutationFn: async () => {
