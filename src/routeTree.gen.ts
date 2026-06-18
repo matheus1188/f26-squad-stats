@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TeamsRouteImport } from './routes/teams'
 import { Route as StatsRouteImport } from './routes/stats'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as RankingRouteImport } from './routes/ranking'
 import { Route as PlayersRouteImport } from './routes/players'
 import { Route as IndexRouteImport } from './routes/index'
@@ -25,6 +26,11 @@ const TeamsRoute = TeamsRouteImport.update({
 const StatsRoute = StatsRouteImport.update({
   id: '/stats',
   path: '/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RankingRoute = RankingRouteImport.update({
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/players': typeof PlayersRoute
   '/ranking': typeof RankingRoute
+  '/settings': typeof SettingsRoute
   '/stats': typeof StatsRoute
   '/teams': typeof TeamsRoute
   '/matches/new': typeof MatchesNewRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/players': typeof PlayersRoute
   '/ranking': typeof RankingRoute
+  '/settings': typeof SettingsRoute
   '/stats': typeof StatsRoute
   '/teams': typeof TeamsRoute
   '/matches/new': typeof MatchesNewRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/players': typeof PlayersRoute
   '/ranking': typeof RankingRoute
+  '/settings': typeof SettingsRoute
   '/stats': typeof StatsRoute
   '/teams': typeof TeamsRoute
   '/matches/new': typeof MatchesNewRoute
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/players'
     | '/ranking'
+    | '/settings'
     | '/stats'
     | '/teams'
     | '/matches/new'
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/'
     | '/players'
     | '/ranking'
+    | '/settings'
     | '/stats'
     | '/teams'
     | '/matches/new'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/players'
     | '/ranking'
+    | '/settings'
     | '/stats'
     | '/teams'
     | '/matches/new'
@@ -115,6 +127,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PlayersRoute: typeof PlayersRoute
   RankingRoute: typeof RankingRoute
+  SettingsRoute: typeof SettingsRoute
   StatsRoute: typeof StatsRoute
   TeamsRoute: typeof TeamsRoute
   MatchesNewRoute: typeof MatchesNewRoute
@@ -135,6 +148,13 @@ declare module '@tanstack/react-router' {
       path: '/stats'
       fullPath: '/stats'
       preLoaderRoute: typeof StatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ranking': {
@@ -179,6 +199,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PlayersRoute: PlayersRoute,
   RankingRoute: RankingRoute,
+  SettingsRoute: SettingsRoute,
   StatsRoute: StatsRoute,
   TeamsRoute: TeamsRoute,
   MatchesNewRoute: MatchesNewRoute,

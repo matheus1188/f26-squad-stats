@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
+import { I18nProvider } from "@/lib/i18n";
 
 function NotFoundComponent() {
   return (
@@ -65,18 +66,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "F26 Friends Match Tracker" },
-      { name: "description", content: "Track F26 friendly matches, players, teams, rankings and stats with your friends." },
+      { title: "F26 Arena — Friends Match Tracker" },
+      { name: "description", content: "Premium iOS-style tracker for F26 friendly matches: players, teams, rankings and stats." },
       { name: "theme-color", content: "#0a1320" },
-      { property: "og:title", content: "F26 Friends Match Tracker" },
-      { property: "og:description", content: "Track F26 friendly matches, rankings and stats with your friends." },
+      { property: "og:title", content: "F26 Arena" },
+      { property: "og:description", content: "Premium iOS-style F26 match tracker for you and your friends." },
       { property: "og:type", content: "website" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" },
     ],
   }),
   shellComponent: RootShell,
@@ -90,6 +91,12 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en" className="dark">
       <head>
         <HeadContent />
+        <script
+          // Apply saved theme synchronously to prevent flash
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var s=localStorage.getItem('f26.settings.v1');var t=s?JSON.parse(s).theme:'dark';if(t==='light'){document.documentElement.classList.remove('dark');}else if(t==='system'){var m=window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.toggle('dark',m);}}catch(e){}})();`,
+          }}
+        />
       </head>
       <body>
         {children}
@@ -103,8 +110,10 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
-      <Toaster richColors position="top-center" />
+      <I18nProvider>
+        <Outlet />
+        <Toaster richColors position="top-center" />
+      </I18nProvider>
     </QueryClientProvider>
   );
 }
