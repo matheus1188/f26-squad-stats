@@ -1,25 +1,20 @@
 import type { Team } from "@/lib/db";
 import { cn } from "@/lib/utils";
-import { Shield } from "lucide-react";
+import { TeamCrest } from "./TeamCrest";
 
-export function TeamBadge({ team, size = "md", showName = true, className }: {
+export function TeamBadge({ team, size = "md", showName = true, className, reverse = false }: {
   team?: Team | null;
   size?: "sm" | "md" | "lg";
   showName?: boolean;
   className?: string;
+  reverse?: boolean;
 }) {
-  const s = size === "lg" ? "size-12" : size === "sm" ? "size-6" : "size-8";
+  const px = size === "lg" ? 48 : size === "sm" ? 24 : 32;
   return (
-    <div className={cn("flex items-center gap-2 min-w-0", className)}>
-      <div className={cn("shrink-0 grid place-items-center rounded-md bg-white/5 border border-white/10 overflow-hidden", s)}>
-        {team?.crest_url ? (
-          <img src={team.crest_url} alt={team.name} className="size-full object-contain p-0.5" loading="lazy" />
-        ) : (
-          <Shield className="size-3/5 text-muted-foreground" />
-        )}
-      </div>
+    <div className={cn("flex items-center gap-2 min-w-0", reverse && "flex-row-reverse", className)}>
+      <TeamCrest team={team} size={px} />
       {showName && (
-        <span className="truncate text-sm font-medium">{team?.name ?? "—"}</span>
+        <span className={cn("truncate text-sm font-medium", reverse && "text-right")}>{team?.name ?? "—"}</span>
       )}
     </div>
   );
