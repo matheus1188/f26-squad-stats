@@ -6,7 +6,7 @@ export type Theme = "light" | "dark" | "system";
 type Dict = Record<string, string>;
 
 const en: Dict = {
-  "app.name": "F26 Arena",
+  "app.name": "GolaçoCup",
   "app.tagline": "Friends Match Tracker",
   "nav.dashboard": "Home",
   "nav.players": "Players",
@@ -131,7 +131,7 @@ const en: Dict = {
 };
 
 const pt: Dict = {
-  "app.name": "F26 Arena",
+  "app.name": "GolaçoCup",
   "app.tagline": "Placar entre amigos",
   "nav.dashboard": "Início",
   "nav.players": "Jogadores",
@@ -256,7 +256,7 @@ const pt: Dict = {
 };
 
 const es: Dict = {
-  "app.name": "F26 Arena",
+  "app.name": "GolaçoCup",
   "app.tagline": "Marcador entre amigos",
   "nav.dashboard": "Inicio",
   "nav.players": "Jugadores",
@@ -431,13 +431,13 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
   const [lang, setLangState] = useState<Lang>("en");
   const [theme, setThemeState] = useState<Theme>("dark");
-  const [appName, setAppNameState] = useState<string>("F26 Arena");
+  const [appName, setAppNameState] = useState<string>("GolaçoCup");
 
   useEffect(() => {
     const saved = readLS();
     setLangState((saved.lang as Lang) ?? detectLang());
     setThemeState((saved.theme as Theme) ?? "dark");
-    setAppNameState(saved.appName ?? "F26 Arena");
+    setAppNameState(saved.appName ?? "GolaçoCup");
     setHydrated(true);
   }, []);
 

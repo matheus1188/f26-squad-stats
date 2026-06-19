@@ -1,7 +1,7 @@
 {
-  "name": "F26 Arena — Friends Match Tracker",
-  "short_name": "F26 Arena",
-  "description": "Premium tracker for F26 friendly matches: players, teams, rankings and stats.",
+  "name": "GolaçoCup — Friends Football Tracker",
+  "short_name": "GolaçoCup",
+  "description": "Premium tracker for digital football matches between friends: players, teams, rankings and stats.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

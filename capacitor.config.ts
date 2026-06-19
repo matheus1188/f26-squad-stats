@@ -4,8 +4,8 @@ import type { CapacitorConfig } from '@capacitor/cli';
 // Replace `server.url` with your own published URL after publishing in Lovable
 // (or remove `server` entirely to ship the bundled web assets from /dist).
 const config: CapacitorConfig = {
-  appId: 'app.lovable.f26arena',
-  appName: 'F26 Arena',
+  appId: 'app.lovable.golacocup',
+  appName: 'GolaçoCup',
   webDir: 'dist/client',
   backgroundColor: '#0a1320',
   ios: {
