@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
-  head: () => ({ meta: [{ title: "F26 Arena" }] }),
+  head: () => ({ meta: [{ title: "GolaçoCup" }] }),
   component: Dashboard,
 });
 
