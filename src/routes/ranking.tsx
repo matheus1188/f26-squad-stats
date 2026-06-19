@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const Route = createFileRoute("/ranking")({
-  head: () => ({ meta: [{ title: "Ranking — F26 Arena" }] }),
+  head: () => ({ meta: [{ title: "Ranking — GolaçoCup" }] }),
   component: RankingPage,
 });
 

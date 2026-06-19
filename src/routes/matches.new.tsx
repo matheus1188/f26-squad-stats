@@ -20,7 +20,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/matches/new")({
-  head: () => ({ meta: [{ title: "New match — F26 Arena" }] }),
+  head: () => ({ meta: [{ title: "New match — GolaçoCup" }] }),
   component: NewMatch,
 });
 

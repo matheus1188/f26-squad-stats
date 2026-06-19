@@ -17,7 +17,7 @@ import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/matches/")({
-  head: () => ({ meta: [{ title: "History — F26 Arena" }] }),
+  head: () => ({ meta: [{ title: "History — GolaçoCup" }] }),
   component: MatchHistory,
 });
 

@@ -15,7 +15,7 @@ import { TeamCrest } from "@/components/TeamCrest";
 import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/teams")({
-  head: () => ({ meta: [{ title: "Teams — F26 Arena" }] }),
+  head: () => ({ meta: [{ title: "Teams — GolaçoCup" }] }),
   component: TeamsPage,
 });
 
