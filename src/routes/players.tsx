@@ -186,13 +186,29 @@ function PlayerDialog({ open, onOpenChange, player }: { open: boolean; onOpenCha
     }}>
       <DialogContent>
         <DialogHeader><DialogTitle>{player ? t("players.edit") : t("players.add")}</DialogTitle></DialogHeader>
-        <div className="space-y-4">
+        <div className="space-y-5">
           <div>
             <Label htmlFor="name">{t("common.name")}</Label>
             <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Marco" autoFocus className="rounded-xl" />
           </div>
+
           <div>
-            <Label>Escolha um ícone</Label>
+            <Label>Foto do jogador</Label>
+            <div className="mt-2">
+              <ImageUpload
+                value={avatar}
+                onChange={setAvatar}
+                bucket="player-images"
+                shape="circle"
+                size={88}
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
+              Ou escolha um avatar
+            </Label>
             <div className="mt-2 grid grid-cols-6 gap-2">
               {DEFAULT_AVATARS.map((url) => {
                 const selected = avatar === url;
@@ -212,19 +228,6 @@ function PlayerDialog({ open, onOpenChange, player }: { open: boolean; onOpenCha
                 );
               })}
             </div>
-            {avatar && (
-              <button
-                type="button"
-                onClick={() => setAvatar("")}
-                className="mt-2 text-xs text-muted-foreground hover:text-foreground underline"
-              >
-                Remover ícone
-              </button>
-            )}
-          </div>
-          <div>
-            <Label htmlFor="avatar">{t("players.avatar_url")} <span className="text-xs text-muted-foreground">(opcional)</span></Label>
-            <Input id="avatar" value={avatar} onChange={(e) => setAvatar(e.target.value)} placeholder="https://..." className="rounded-xl" />
           </div>
         </div>
         <DialogFooter>
