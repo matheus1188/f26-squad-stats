@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { fetchMatches, fetchPlayers, queryKeys, type Player } from "@/lib/db";
 import { computePlayerStats } from "@/lib/stats";
@@ -165,6 +165,12 @@ function PlayerDialog({ open, onOpenChange, player }: { open: boolean; onOpenCha
   const [name, setName] = useState(player?.name ?? "");
   const [avatar, setAvatar] = useState(player?.avatar_url ?? "");
 
+  useEffect(() => {
+    if (!open) return;
+    setName(player?.name ?? "");
+    setAvatar(player?.avatar_url ?? "");
+  }, [open, player]);
+
   const save = useMutation({
     mutationFn: async () => {
       if (!name.trim()) throw new Error(t("players.name_required"));
@@ -185,10 +191,7 @@ function PlayerDialog({ open, onOpenChange, player }: { open: boolean; onOpenCha
   });
 
   return (
-    <Dialog open={open} onOpenChange={(o) => {
-      onOpenChange(o);
-      if (o) { setName(player?.name ?? ""); setAvatar(player?.avatar_url ?? ""); }
-    }}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{player ? t("players.edit") : t("players.add")}</DialogTitle>
