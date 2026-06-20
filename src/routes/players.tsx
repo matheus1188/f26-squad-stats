@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { fetchMatches, fetchPlayers, queryKeys, type Player } from "@/lib/db";
 import { computePlayerStats } from "@/lib/stats";
@@ -9,14 +9,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Plus, Pencil, Trash2, User2, ChevronDown, Flame } from "lucide-react";
 import { toast } from "sonner";
 import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { DEFAULT_AVATARS } from "@/lib/default-avatars";
-import { ImageUpload } from "@/components/ImageUpload";
 
 export const Route = createFileRoute("/players")({
   head: () => ({ meta: [{ title: "Players — GolaçoCup" }] }),
@@ -39,8 +38,14 @@ function PlayersPage() {
 
   const del = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("players").delete().eq("id", id);
-      if (error) throw error;
+      const { error: matchError } = await supabase
+        .from("matches")
+        .delete()
+        .or(`player1_id.eq.${id},player2_id.eq.${id}`);
+      if (matchError) throw matchError;
+
+      const { error: playerError } = await supabase.from("players").delete().eq("id", id);
+      if (playerError) throw playerError;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.players });
@@ -160,6 +165,12 @@ function PlayerDialog({ open, onOpenChange, player }: { open: boolean; onOpenCha
   const [name, setName] = useState(player?.name ?? "");
   const [avatar, setAvatar] = useState(player?.avatar_url ?? "");
 
+  useEffect(() => {
+    if (!open) return;
+    setName(player?.name ?? "");
+    setAvatar(player?.avatar_url ?? "");
+  }, [open, player]);
+
   const save = useMutation({
     mutationFn: async () => {
       if (!name.trim()) throw new Error(t("players.name_required"));
@@ -180,12 +191,12 @@ function PlayerDialog({ open, onOpenChange, player }: { open: boolean; onOpenCha
   });
 
   return (
-    <Dialog open={open} onOpenChange={(o) => {
-      onOpenChange(o);
-      if (o) { setName(player?.name ?? ""); setAvatar(player?.avatar_url ?? ""); }
-    }}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        <DialogHeader><DialogTitle>{player ? t("players.edit") : t("players.add")}</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>{player ? t("players.edit") : t("players.add")}</DialogTitle>
+          <DialogDescription className="sr-only">{t("players.avatar_url")}</DialogDescription>
+        </DialogHeader>
         <div className="space-y-5">
           <div>
             <Label htmlFor="name">{t("common.name")}</Label>
@@ -193,16 +204,14 @@ function PlayerDialog({ open, onOpenChange, player }: { open: boolean; onOpenCha
           </div>
 
           <div>
-            <Label>Foto do jogador</Label>
-            <div className="mt-2">
-              <ImageUpload
-                value={avatar}
-                onChange={setAvatar}
-                bucket="player-images"
-                shape="circle"
-                size={88}
-              />
-            </div>
+            <Label htmlFor="avatar">{t("players.avatar_url")}</Label>
+            <Input
+              id="avatar"
+              value={avatar}
+              onChange={(e) => setAvatar(e.target.value)}
+              placeholder="https://..."
+              className="mt-1 rounded-xl"
+            />
           </div>
 
           <div>

@@ -1,6 +1,5 @@
 import type { Team } from "@/lib/db";
 import { cn } from "@/lib/utils";
-import { flagUrl } from "@/lib/countries";
 
 function hash(str: string) {
   let h = 0;
@@ -23,9 +22,8 @@ function initials(name: string) {
 }
 
 /**
- * Team crest: shows the real country flag as the background when the country
- * resolves to an ISO code, with the team monogram overlaid. Falls back to a
- * deterministic vector gradient when the country is unknown.
+ * Stable team crest: shows a custom http(s) crest when present and otherwise
+ * falls back to a deterministic local vector badge without external requests.
  */
 export function TeamCrest({ team, size = 40, className }: {
   team?: { name: string; country: string; crest_url?: string } | null;
@@ -35,7 +33,6 @@ export function TeamCrest({ team, size = 40, className }: {
   const name = team?.name ?? "—";
   const country = team?.country ?? "";
   const uploaded = team?.crest_url && /^https?:\/\//i.test(team.crest_url) ? team.crest_url : null;
-  const flag = !uploaded ? flagUrl(country, size > 64 ? "w320" : "w160") : null;
   const [c1, c2] = gradientFor(name + country);
   const mono = initials(name);
 
@@ -53,23 +50,6 @@ export function TeamCrest({ team, size = 40, className }: {
           loading="lazy"
           className="absolute inset-0 h-full w-full object-cover"
         />
-      ) : flag ? (
-        <>
-          <img
-            src={flag}
-            alt=""
-            loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover"
-            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/45" />
-          <span
-            className="absolute inset-0 grid place-items-center font-display font-black text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
-            style={{ fontSize: Math.max(10, size * 0.42), lineHeight: 1 }}
-          >
-            {mono}
-          </span>
-        </>
       ) : (
         <>
           {/* Default football-badge placeholder */}

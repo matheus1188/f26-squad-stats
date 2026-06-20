@@ -85,7 +85,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
       { rel: "icon", type: "image/png", sizes: "192x192", href: "/icon-192.png" },
       { rel: "icon", type: "image/png", sizes: "512x512", href: "/icon-512.png" },
@@ -123,7 +122,18 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  useEffect(() => { registerServiceWorker(); }, []);
+  useEffect(() => {
+    const existing = document.querySelector<HTMLLinkElement>('link[rel="manifest"]');
+    if (!existing) {
+      const manifest = document.createElement("link");
+      manifest.rel = "manifest";
+      manifest.href = window.location.hostname.endsWith("lovableproject.com")
+        ? `/manifest.webmanifest${window.location.search}`
+        : "/manifest.webmanifest";
+      document.head.appendChild(manifest);
+    }
+    registerServiceWorker();
+  }, []);
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>

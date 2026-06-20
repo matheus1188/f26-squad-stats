@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
-import { fetchPlayers, fetchTeams, queryKeys } from "@/lib/db";
+import { fetchMatches, fetchPlayers, fetchTeams, queryKeys } from "@/lib/db";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,11 +16,14 @@ import { toast } from "sonner";
 import { Swords, Minus, Plus, Trophy, Search } from "lucide-react";
 import { useT } from "@/lib/i18n";
 import { celebrate } from "@/lib/celebrate";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/matches/new")({
   head: () => ({ meta: [{ title: "New match — GolaçoCup" }] }),
+  validateSearch: (search: Record<string, unknown>) => ({
+    edit: typeof search.edit === "string" ? search.edit : undefined,
+  }),
   component: NewMatch,
 });
 
@@ -30,15 +33,30 @@ function NewMatch() {
   const qc = useQueryClient();
   const players = useQuery({ queryKey: queryKeys.players, queryFn: fetchPlayers });
   const teams = useQuery({ queryKey: queryKeys.teams, queryFn: fetchTeams });
+  const matches = useQuery({ queryKey: queryKeys.matches, queryFn: fetchMatches });
+  const { edit } = Route.useSearch();
+  const editingMatch = matches.data?.find((m) => m.id === edit);
 
-  const [p1, setP1] = useState<string>("");
-  const [p2, setP2] = useState<string>("");
-  const [t1, setT1] = useState<string>("");
-  const [t2, setT2] = useState<string>("");
-  const [s1, setS1] = useState<number>(0);
-  const [s2, setS2] = useState<number>(0);
-  const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd"));
-  const [notes, setNotes] = useState("");
+  const [p1, setP1] = useState<string>(editingMatch?.player1_id ?? "");
+  const [p2, setP2] = useState<string>(editingMatch?.player2_id ?? "");
+  const [t1, setT1] = useState<string>(editingMatch?.team1_id ?? "");
+  const [t2, setT2] = useState<string>(editingMatch?.team2_id ?? "");
+  const [s1, setS1] = useState<number>(editingMatch?.score1 ?? 0);
+  const [s2, setS2] = useState<number>(editingMatch?.score2 ?? 0);
+  const [date, setDate] = useState(editingMatch?.played_at ?? format(new Date(), "yyyy-MM-dd"));
+  const [notes, setNotes] = useState(editingMatch?.notes ?? "");
+
+  useEffect(() => {
+    if (!editingMatch) return;
+    setP1(editingMatch.player1_id);
+    setP2(editingMatch.player2_id);
+    setT1(editingMatch.team1_id ?? "");
+    setT2(editingMatch.team2_id ?? "");
+    setS1(editingMatch.score1);
+    setS2(editingMatch.score2);
+    setDate(editingMatch.played_at);
+    setNotes(editingMatch.notes ?? "");
+  }, [editingMatch]);
 
   const team1 = teams.data?.find(x => x.id === t1);
   const team2 = teams.data?.find(x => x.id === t2);
@@ -50,13 +68,16 @@ function NewMatch() {
     mutationFn: async () => {
       if (!p1 || !p2) throw new Error(t("match.select_player"));
       if (p1 === p2) throw new Error("Players must be different");
-      const { error } = await supabase.from("matches").insert({
+      const payload = {
         played_at: date,
         player1_id: p1, player2_id: p2,
         team1_id: t1 || null, team2_id: t2 || null,
         score1: s1, score2: s2,
         notes: notes.trim() || null,
-      });
+      };
+      const { error } = edit
+        ? await supabase.from("matches").update(payload).eq("id", edit)
+        : await supabase.from("matches").insert(payload);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -71,12 +92,12 @@ function NewMatch() {
   const noPlayers = (players.data?.length ?? 0) < 2;
 
   return (
-    <AppLayout title={t("match.new_title")} subtitle={t("match.new_subtitle")}>
+    <AppLayout title={edit ? t("common.edit") : t("match.new_title")} subtitle={t("match.new_subtitle")}>
       {noPlayers && (
         <Card className="glass-card mb-4 border-[color:var(--draw)]/40">
           <CardContent className="py-4 text-sm">
             {t("match.need_players")}{" "}
-            <a href="/players" className="text-primary underline font-semibold">{t("match.add_players_first")}</a>.
+            <button type="button" onClick={() => navigate({ to: "/players" })} className="text-primary underline font-semibold">{t("match.add_players_first")}</button>.
           </CardContent>
         </Card>
       )}
@@ -175,6 +196,7 @@ function TeamPicker({ teams, value, onChange }: {
         <DialogContent className="max-w-lg max-h-[85vh] flex flex-col gap-3">
           <DialogHeader>
             <DialogTitle>{t("match.select_team")}</DialogTitle>
+            <DialogDescription className="sr-only">{t("match.filter_team")}</DialogDescription>
           </DialogHeader>
           <div className="relative">
             <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
