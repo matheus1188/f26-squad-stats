@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { fetchTeams, queryKeys, type Team } from "@/lib/db";
 import { supabase } from "@/integrations/supabase/client";
@@ -119,6 +119,13 @@ function TeamDialog({ open, onOpenChange, team }: { open: boolean; onOpenChange:
   const [country, setCountry] = useState("");
   const [crest, setCrest] = useState("");
 
+  useEffect(() => {
+    if (!open) return;
+    setName(team?.name ?? "");
+    setCountry(team?.country ?? "");
+    setCrest(team?.crest_url ?? "");
+  }, [open, team]);
+
   const save = useMutation({
     mutationFn: async () => {
       if (!name.trim() || !country.trim()) throw new Error(t("teams.all_required"));
@@ -140,12 +147,7 @@ function TeamDialog({ open, onOpenChange, team }: { open: boolean; onOpenChange:
   });
 
   return (
-    <Dialog open={open} onOpenChange={(o) => {
-      onOpenChange(o);
-      if (o) {
-        setName(team?.name ?? ""); setCountry(team?.country ?? ""); setCrest(team?.crest_url ?? "");
-      }
-    }}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{team ? t("teams.edit") : t("teams.add")}</DialogTitle>
