@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { DEFAULT_AVATARS } from "@/lib/default-avatars";
+import { ImageUpload } from "@/components/ImageUpload";
 
 export const Route = createFileRoute("/players")({
   head: () => ({ meta: [{ title: "Players — GolaçoCup" }] }),
