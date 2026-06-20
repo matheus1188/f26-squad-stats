@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { fetchMatches, fetchPlayers, fetchTeams, queryKeys } from "@/lib/db";
 import { supabase } from "@/integrations/supabase/client";
@@ -45,6 +45,18 @@ function NewMatch() {
   const [s2, setS2] = useState<number>(editingMatch?.score2 ?? 0);
   const [date, setDate] = useState(editingMatch?.played_at ?? format(new Date(), "yyyy-MM-dd"));
   const [notes, setNotes] = useState(editingMatch?.notes ?? "");
+
+  useEffect(() => {
+    if (!editingMatch) return;
+    setP1(editingMatch.player1_id);
+    setP2(editingMatch.player2_id);
+    setT1(editingMatch.team1_id ?? "");
+    setT2(editingMatch.team2_id ?? "");
+    setS1(editingMatch.score1);
+    setS2(editingMatch.score2);
+    setDate(editingMatch.played_at);
+    setNotes(editingMatch.notes ?? "");
+  }, [editingMatch]);
 
   const team1 = teams.data?.find(x => x.id === t1);
   const team2 = teams.data?.find(x => x.id === t2);
