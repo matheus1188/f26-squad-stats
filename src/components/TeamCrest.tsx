@@ -1,6 +1,10 @@
 import type { Team } from "@/lib/db";
 import { cn } from "@/lib/utils";
 
+/**
+ * Vector-style team crest: deterministic gradient + monogram + optional country code.
+ * Replaces realistic flag images with a clean, premium, consistent look.
+ */
 function hash(str: string) {
   let h = 0;
   for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
@@ -21,61 +25,52 @@ function initials(name: string) {
   return (words[0][0] + words[1][0]).toUpperCase();
 }
 
-/**
- * Stable team crest: shows a custom http(s) crest when present and otherwise
- * falls back to a deterministic local vector badge without external requests.
- */
+function countryCode(country: string) {
+  return country.replace(/[^\p{L}]/gu, "").slice(0, 3).toUpperCase();
+}
+
 export function TeamCrest({ team, size = 40, className }: {
-  team?: { name: string; country: string; crest_url?: string } | null;
+  team?: { name: string; country: string } | null;
   size?: number;
   className?: string;
 }) {
   const name = team?.name ?? "—";
   const country = team?.country ?? "";
-  const uploaded = team?.crest_url && /^https?:\/\//i.test(team.crest_url) ? team.crest_url : null;
   const [c1, c2] = gradientFor(name + country);
+  const id = `g${hash(name + country).toString(36)}`;
   const mono = initials(name);
-
+  const code = countryCode(country);
   return (
-    <div
-      className={cn("relative shrink-0 overflow-hidden rounded-[22%] ring-1 ring-black/20 shadow-md", className)}
-      style={{ width: size, height: size, background: `linear-gradient(135deg, ${c1}, ${c2})` }}
-      role="img"
-      aria-label={`${name}${country ? ` (${country})` : ""}`}
+    <svg
+      width={size} height={size} viewBox="0 0 64 64"
+      className={cn("shrink-0 drop-shadow-sm", className)}
+      role="img" aria-label={name}
     >
-      {uploaded ? (
-        <img
-          src={uploaded}
-          alt={name}
-          loading="lazy"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-      ) : (
-        <>
-          {/* Default football-badge placeholder */}
-          <svg viewBox="0 0 64 64" className="absolute inset-0 h-full w-full" aria-hidden>
-            <defs>
-              <radialGradient id={`b${hash(name).toString(36)}`} cx="50%" cy="40%" r="60%">
-                <stop offset="0%" stopColor="white" stopOpacity="0.25" />
-                <stop offset="100%" stopColor="white" stopOpacity="0" />
-              </radialGradient>
-            </defs>
-            <circle cx="32" cy="32" r="22" fill="white" fillOpacity="0.95" />
-            <polygon points="32,16 38,22 36,30 28,30 26,22" fill="black" />
-            <polygon points="20,28 26,22 28,30 24,36 18,34" fill="black" />
-            <polygon points="44,28 38,22 36,30 40,36 46,34" fill="black" />
-            <polygon points="24,42 32,38 40,42 36,48 28,48" fill="black" />
-            <circle cx="32" cy="32" r="22" fill={`url(#b${hash(name).toString(36)})`} />
-          </svg>
-          <span
-            className="absolute inset-x-0 bottom-1 text-center font-display font-black text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
-            style={{ fontSize: Math.max(8, size * 0.2), lineHeight: 1 }}
-          >
-            {mono}
-          </span>
-        </>
+      <defs>
+        <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor={c1} />
+          <stop offset="100%" stopColor={c2} />
+        </linearGradient>
+      </defs>
+      <rect x="2" y="2" width="60" height="60" rx="16" fill={`url(#${id})`} />
+      <rect x="2" y="2" width="60" height="60" rx="16" fill="white" fillOpacity="0.06" />
+      <path d="M2 18 Q 32 30 62 18" stroke="white" strokeOpacity="0.18" strokeWidth="1.2" fill="none" />
+      <path d="M2 46 Q 32 58 62 46" stroke="white" strokeOpacity="0.18" strokeWidth="1.2" fill="none" />
+      <text
+        x="32" y="38" textAnchor="middle"
+        fontFamily="ui-sans-serif, system-ui, -apple-system"
+        fontWeight="800" fontSize="22"
+        fill="white" fillOpacity="0.95"
+      >{mono}</text>
+      {code && (
+        <text
+          x="32" y="54" textAnchor="middle"
+          fontFamily="ui-sans-serif, system-ui"
+          fontWeight="700" fontSize="7"
+          fill="white" fillOpacity="0.8" letterSpacing="1"
+        >{code}</text>
       )}
-    </div>
+    </svg>
   );
 }
 

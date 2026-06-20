@@ -10,14 +10,14 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { TeamCrest } from "@/components/TeamCrest";
-import { Trash2, Plus, History as HistoryIcon, ChevronDown, Pencil } from "lucide-react";
+import { Trash2, Plus, History as HistoryIcon, ChevronDown } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { toast } from "sonner";
 import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/matches/")({
-  head: () => ({ meta: [{ title: "History — GolaçoCup" }] }),
+  head: () => ({ meta: [{ title: "History — F26 Arena" }] }),
   component: MatchHistory,
 });
 
@@ -187,16 +187,6 @@ function MatchHistory() {
                         {m.notes && (
                           <p className="text-xs text-muted-foreground italic">"{m.notes}"</p>
                         )}
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="gap-2"
-                          asChild
-                        >
-                          <Link to="/matches/new" search={{ edit: m.id }}>
-                            <Pencil className="size-4" /> {t("common.edit")}
-                          </Link>
-                        </Button>
                         <Button
                           size="sm"
                           variant="ghost"

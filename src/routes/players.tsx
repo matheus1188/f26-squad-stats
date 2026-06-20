@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { fetchMatches, fetchPlayers, queryKeys, type Player } from "@/lib/db";
 import { computePlayerStats } from "@/lib/stats";
@@ -9,16 +9,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Plus, Pencil, Trash2, User2, ChevronDown, Flame } from "lucide-react";
 import { toast } from "sonner";
 import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
-import { DEFAULT_AVATARS } from "@/lib/default-avatars";
 
 export const Route = createFileRoute("/players")({
-  head: () => ({ meta: [{ title: "Players — GolaçoCup" }] }),
+  head: () => ({ meta: [{ title: "Players — F26 Arena" }] }),
   component: PlayersPage,
 });
 
@@ -38,14 +37,8 @@ function PlayersPage() {
 
   const del = useMutation({
     mutationFn: async (id: string) => {
-      const { error: matchError } = await supabase
-        .from("matches")
-        .delete()
-        .or(`player1_id.eq.${id},player2_id.eq.${id}`);
-      if (matchError) throw matchError;
-
-      const { error: playerError } = await supabase.from("players").delete().eq("id", id);
-      if (playerError) throw playerError;
+      const { error } = await supabase.from("players").delete().eq("id", id);
+      if (error) throw error;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.players });
@@ -165,12 +158,6 @@ function PlayerDialog({ open, onOpenChange, player }: { open: boolean; onOpenCha
   const [name, setName] = useState(player?.name ?? "");
   const [avatar, setAvatar] = useState(player?.avatar_url ?? "");
 
-  useEffect(() => {
-    if (!open) return;
-    setName(player?.name ?? "");
-    setAvatar(player?.avatar_url ?? "");
-  }, [open, player]);
-
   const save = useMutation({
     mutationFn: async () => {
       if (!name.trim()) throw new Error(t("players.name_required"));
@@ -191,52 +178,20 @@ function PlayerDialog({ open, onOpenChange, player }: { open: boolean; onOpenCha
   });
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(o) => {
+      onOpenChange(o);
+      if (o) { setName(player?.name ?? ""); setAvatar(player?.avatar_url ?? ""); }
+    }}>
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{player ? t("players.edit") : t("players.add")}</DialogTitle>
-          <DialogDescription className="sr-only">{t("players.avatar_url")}</DialogDescription>
-        </DialogHeader>
-        <div className="space-y-5">
+        <DialogHeader><DialogTitle>{player ? t("players.edit") : t("players.add")}</DialogTitle></DialogHeader>
+        <div className="space-y-4">
           <div>
             <Label htmlFor="name">{t("common.name")}</Label>
             <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Marco" autoFocus className="rounded-xl" />
           </div>
-
           <div>
             <Label htmlFor="avatar">{t("players.avatar_url")}</Label>
-            <Input
-              id="avatar"
-              value={avatar}
-              onChange={(e) => setAvatar(e.target.value)}
-              placeholder="https://..."
-              className="mt-1 rounded-xl"
-            />
-          </div>
-
-          <div>
-            <Label className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
-              Ou escolha um avatar
-            </Label>
-            <div className="mt-2 grid grid-cols-6 gap-2">
-              {DEFAULT_AVATARS.map((url) => {
-                const selected = avatar === url;
-                return (
-                  <button
-                    key={url}
-                    type="button"
-                    onClick={() => setAvatar(url)}
-                    className={cn(
-                      "relative aspect-square rounded-xl overflow-hidden ring-2 transition tap",
-                      selected ? "ring-primary scale-105" : "ring-transparent hover:ring-foreground/20"
-                    )}
-                    aria-label="Escolher avatar"
-                  >
-                    <img src={url} alt="" className="h-full w-full object-cover bg-foreground/5" />
-                  </button>
-                );
-              })}
-            </div>
+            <Input id="avatar" value={avatar} onChange={(e) => setAvatar(e.target.value)} placeholder="https://..." className="rounded-xl" />
           </div>
         </div>
         <DialogFooter>

@@ -9,7 +9,7 @@ import { BarChart3 } from "lucide-react";
 import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/stats")({
-  head: () => ({ meta: [{ title: "Stats — GolaçoCup" }] }),
+  head: () => ({ meta: [{ title: "Stats — F26 Arena" }] }),
   component: StatsPage,
 });
 

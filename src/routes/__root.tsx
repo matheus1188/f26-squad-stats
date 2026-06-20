@@ -11,7 +11,6 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { registerServiceWorker } from "../lib/register-sw";
 import { Toaster } from "@/components/ui/sonner";
 import { I18nProvider } from "@/lib/i18n";
 
@@ -67,32 +66,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "GolaçoCup — Friends Football Tracker" },
-      { name: "description", content: "Premium iOS-style tracker for digital football matches between friends: players, teams, rankings and stats." },
-      { name: "theme-color", content: "#050B18" },
-      { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
-      { name: "apple-mobile-web-app-title", content: "GolaçoCup" },
-      { name: "mobile-web-app-capable", content: "yes" },
-      { property: "og:title", content: "GolaçoCup — Friends Football Tracker" },
-      { property: "og:description", content: "Premium iOS-style tracker for digital football matches between friends: players, teams, rankings and stats." },
+      { title: "F26 Arena — Friends Match Tracker" },
+      { name: "description", content: "Premium iOS-style tracker for F26 friendly matches: players, teams, rankings and stats." },
+      { name: "theme-color", content: "#0a1320" },
+      { property: "og:title", content: "F26 Arena" },
+      { property: "og:description", content: "Premium iOS-style F26 match tracker for you and your friends." },
       { property: "og:type", content: "website" },
-      { name: "twitter:title", content: "GolaçoCup — Friends Football Tracker" },
-      { name: "twitter:description", content: "Premium iOS-style tracker for digital football matches between friends: players, teams, rankings and stats." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/DyFZiLS8zdR9f8sNqZwXnxRzRXC3/social-images/social-1781909846521-1000368080.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/DyFZiLS8zdR9f8sNqZwXnxRzRXC3/social-images/social-1781909846521-1000368080.webp" },
-      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
-      { rel: "icon", type: "image/png", sizes: "192x192", href: "/icon-192.png" },
-      { rel: "icon", type: "image/png", sizes: "512x512", href: "/icon-512.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" },
     ],
-
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -122,18 +108,6 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  useEffect(() => {
-    const existing = document.querySelector<HTMLLinkElement>('link[rel="manifest"]');
-    if (!existing) {
-      const manifest = document.createElement("link");
-      manifest.rel = "manifest";
-      manifest.href = window.location.hostname.endsWith("lovableproject.com")
-        ? `/manifest.webmanifest${window.location.search}`
-        : "/manifest.webmanifest";
-      document.head.appendChild(manifest);
-    }
-    registerServiceWorker();
-  }, []);
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>

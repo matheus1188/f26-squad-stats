@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { fetchTeams, queryKeys, type Team } from "@/lib/db";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,14 +8,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2, Search, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { TeamCrest } from "@/components/TeamCrest";
 import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/teams")({
-  head: () => ({ meta: [{ title: "Teams — GolaçoCup" }] }),
+  head: () => ({ meta: [{ title: "Teams — F26 Arena" }] }),
   component: TeamsPage,
 });
 
@@ -34,20 +34,8 @@ function TeamsPage() {
 
   const del = useMutation({
     mutationFn: async (id: string) => {
-      const { error: team1Error } = await supabase
-        .from("matches")
-        .update({ team1_id: null })
-        .eq("team1_id", id);
-      if (team1Error) throw team1Error;
-
-      const { error: team2Error } = await supabase
-        .from("matches")
-        .update({ team2_id: null })
-        .eq("team2_id", id);
-      if (team2Error) throw team2Error;
-
-      const { error: teamError } = await supabase.from("teams").delete().eq("id", id);
-      if (teamError) throw teamError;
+      const { error } = await supabase.from("teams").delete().eq("id", id);
+      if (error) throw error;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.teams });
@@ -119,13 +107,6 @@ function TeamDialog({ open, onOpenChange, team }: { open: boolean; onOpenChange:
   const [country, setCountry] = useState("");
   const [crest, setCrest] = useState("");
 
-  useEffect(() => {
-    if (!open) return;
-    setName(team?.name ?? "");
-    setCountry(team?.country ?? "");
-    setCrest(team?.crest_url ?? "");
-  }, [open, team]);
-
   const save = useMutation({
     mutationFn: async () => {
       if (!name.trim() || !country.trim()) throw new Error(t("teams.all_required"));
@@ -147,12 +128,14 @@ function TeamDialog({ open, onOpenChange, team }: { open: boolean; onOpenChange:
   });
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(o) => {
+      onOpenChange(o);
+      if (o) {
+        setName(team?.name ?? ""); setCountry(team?.country ?? ""); setCrest(team?.crest_url ?? "");
+      }
+    }}>
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{team ? t("teams.edit") : t("teams.add")}</DialogTitle>
-          <DialogDescription className="sr-only">{t("teams.crest_url")}</DialogDescription>
-        </DialogHeader>
+        <DialogHeader><DialogTitle>{team ? t("teams.edit") : t("teams.add")}</DialogTitle></DialogHeader>
         <div className="space-y-4">
           <div>
             <Label htmlFor="t-name">{t("common.name")}</Label>
@@ -162,19 +145,9 @@ function TeamDialog({ open, onOpenChange, team }: { open: boolean; onOpenChange:
             <Label htmlFor="t-country">{t("common.country")}</Label>
             <Input id="t-country" value={country} onChange={(e) => setCountry(e.target.value)} className="rounded-xl" />
           </div>
-          <div>
-            <Label htmlFor="t-crest">{t("teams.crest_url")}</Label>
-            <Input
-              id="t-crest"
-              value={crest}
-              onChange={(e) => setCrest(e.target.value)}
-              placeholder="https://..."
-              className="mt-1 rounded-xl"
-            />
-          </div>
           {(name || country) && (
             <div className="flex items-center gap-3 rounded-2xl bg-foreground/[0.04] p-3">
-              <TeamCrest team={{ name: name || "Preview", country, crest_url: crest }} size={56} />
+              <TeamCrest team={{ name: name || "Preview", country }} size={56} />
               <div className="min-w-0">
                 <div className="text-xs text-muted-foreground">{t("common.preview")}</div>
                 <div className="font-bold truncate">{name || "—"}</div>

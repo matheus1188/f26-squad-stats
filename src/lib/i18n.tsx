@@ -6,7 +6,7 @@ export type Theme = "light" | "dark" | "system";
 type Dict = Record<string, string>;
 
 const en: Dict = {
-  "app.name": "GolaçoCup",
+  "app.name": "F26 Arena",
   "app.tagline": "Friends Match Tracker",
   "nav.dashboard": "Home",
   "nav.players": "Players",
@@ -38,7 +38,7 @@ const en: Dict = {
   "common.confirm": "Confirm",
   "common.reset": "Reset",
   "dashboard.title": "Dashboard",
-  "dashboard.subtitle": "Live overview of your video game football matches",
+  "dashboard.subtitle": "Live overview of your F26 friendly battles",
   "dashboard.matches": "Matches",
   "dashboard.most_matches": "Most matches",
   "dashboard.most_wins": "Most wins",
@@ -46,7 +46,7 @@ const en: Dict = {
   "dashboard.champion_week": "Champion of the week",
   "dashboard.most_active": "Most active player",
   "dashboard.recent": "Recent matches",
-  "dashboard.no_matches": "No matches yet. Register your first video game match.",
+  "dashboard.no_matches": "No matches yet. Register your first F26 battle.",
   "dashboard.register": "Register match",
   "dashboard.latest_winner": "Latest winner",
   "match.draw": "Draw",
@@ -55,7 +55,7 @@ const en: Dict = {
   "match.deleted": "Match deleted",
   "match.confirm_delete": "Delete this match?",
   "match.new_title": "New match",
-  "match.new_subtitle": "Log the result of your video game match",
+  "match.new_subtitle": "Log the result of your F26 battle",
   "match.player_n": "Player {n}",
   "match.need_players": "You need at least 2 players.",
   "match.add_players_first": "Add players first",
@@ -131,7 +131,7 @@ const en: Dict = {
 };
 
 const pt: Dict = {
-  "app.name": "GolaçoCup",
+  "app.name": "F26 Arena",
   "app.tagline": "Placar entre amigos",
   "nav.dashboard": "Início",
   "nav.players": "Jogadores",
@@ -163,7 +163,7 @@ const pt: Dict = {
   "common.confirm": "Confirmar",
   "common.reset": "Resetar",
   "dashboard.title": "Início",
-  "dashboard.subtitle": "Visão geral das suas partidas de futebol no video game",
+  "dashboard.subtitle": "Visão geral das suas partidas F26",
   "dashboard.matches": "Partidas",
   "dashboard.most_matches": "Mais partidas",
   "dashboard.most_wins": "Mais vitórias",
@@ -171,7 +171,7 @@ const pt: Dict = {
   "dashboard.champion_week": "Campeão da semana",
   "dashboard.most_active": "Jogador mais ativo",
   "dashboard.recent": "Partidas recentes",
-  "dashboard.no_matches": "Ainda sem partidas. Registre sua primeira partida no video game.",
+  "dashboard.no_matches": "Ainda sem partidas. Registre sua primeira batalha F26.",
   "dashboard.register": "Registrar partida",
   "dashboard.latest_winner": "Último vencedor",
   "match.draw": "Empate",
@@ -180,7 +180,7 @@ const pt: Dict = {
   "match.deleted": "Partida excluída",
   "match.confirm_delete": "Excluir esta partida?",
   "match.new_title": "Nova partida",
-  "match.new_subtitle": "Registre o resultado da sua partida no video game",
+  "match.new_subtitle": "Registre o resultado da sua batalha F26",
   "match.player_n": "Jogador {n}",
   "match.need_players": "Você precisa de pelo menos 2 jogadores.",
   "match.add_players_first": "Adicione jogadores primeiro",
@@ -256,7 +256,7 @@ const pt: Dict = {
 };
 
 const es: Dict = {
-  "app.name": "GolaçoCup",
+  "app.name": "F26 Arena",
   "app.tagline": "Marcador entre amigos",
   "nav.dashboard": "Inicio",
   "nav.players": "Jugadores",
@@ -288,7 +288,7 @@ const es: Dict = {
   "common.confirm": "Confirmar",
   "common.reset": "Reiniciar",
   "dashboard.title": "Inicio",
-  "dashboard.subtitle": "Vista en vivo de tus partidos de fútbol en videojuego",
+  "dashboard.subtitle": "Vista en vivo de tus partidos F26",
   "dashboard.matches": "Partidos",
   "dashboard.most_matches": "Más partidos",
   "dashboard.most_wins": "Más victorias",
@@ -296,7 +296,7 @@ const es: Dict = {
   "dashboard.champion_week": "Campeón de la semana",
   "dashboard.most_active": "Jugador más activo",
   "dashboard.recent": "Partidos recientes",
-  "dashboard.no_matches": "Sin partidos aún. Registra tu primera partida en videojuego.",
+  "dashboard.no_matches": "Sin partidos aún. Registra tu primera batalla F26.",
   "dashboard.register": "Registrar partido",
   "dashboard.latest_winner": "Último ganador",
   "match.draw": "Empate",
@@ -305,7 +305,7 @@ const es: Dict = {
   "match.deleted": "Partido eliminado",
   "match.confirm_delete": "¿Eliminar este partido?",
   "match.new_title": "Nuevo partido",
-  "match.new_subtitle": "Registra el resultado de tu partida en videojuego",
+  "match.new_subtitle": "Registra el resultado de tu batalla F26",
   "match.player_n": "Jugador {n}",
   "match.need_players": "Necesitas al menos 2 jugadores.",
   "match.add_players_first": "Añade jugadores primero",
@@ -431,13 +431,13 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
   const [lang, setLangState] = useState<Lang>("en");
   const [theme, setThemeState] = useState<Theme>("dark");
-  const [appName, setAppNameState] = useState<string>("GolaçoCup");
+  const [appName, setAppNameState] = useState<string>("F26 Arena");
 
   useEffect(() => {
     const saved = readLS();
     setLangState((saved.lang as Lang) ?? detectLang());
     setThemeState((saved.theme as Theme) ?? "dark");
-    setAppNameState(saved.appName ?? "GolaçoCup");
+    setAppNameState(saved.appName ?? "F26 Arena");
     setHydrated(true);
   }, []);
 

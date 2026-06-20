@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/settings")({
-  head: () => ({ meta: [{ title: "Settings — GolaçoCup" }] }),
+  head: () => ({ meta: [{ title: "Settings — F26 Arena" }] }),
   component: SettingsPage,
 });
 
@@ -106,7 +106,7 @@ function SettingsPage() {
             <div className="flex gap-2">
               <Input id="appname" value={name} onChange={(e) => setName(e.target.value)} className="rounded-xl" />
               <Button
-                onClick={() => { setAppName(name.trim() || "GolaçoCup"); toast.success("✓"); }}
+                onClick={() => { setAppName(name.trim() || "F26 Arena"); toast.success("✓"); }}
                 className="rounded-xl tap"
               >
                 {t("common.save")}

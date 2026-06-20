@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
-import { fetchMatches, fetchPlayers, fetchTeams, queryKeys } from "@/lib/db";
+import { fetchPlayers, fetchTeams, queryKeys } from "@/lib/db";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,14 +16,11 @@ import { toast } from "sonner";
 import { Swords, Minus, Plus, Trophy, Search } from "lucide-react";
 import { useT } from "@/lib/i18n";
 import { celebrate } from "@/lib/celebrate";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/matches/new")({
-  head: () => ({ meta: [{ title: "New match — GolaçoCup" }] }),
-  validateSearch: (search: Record<string, unknown>) => ({
-    edit: typeof search.edit === "string" ? search.edit : undefined,
-  }),
+  head: () => ({ meta: [{ title: "New match — F26 Arena" }] }),
   component: NewMatch,
 });
 
@@ -33,30 +30,15 @@ function NewMatch() {
   const qc = useQueryClient();
   const players = useQuery({ queryKey: queryKeys.players, queryFn: fetchPlayers });
   const teams = useQuery({ queryKey: queryKeys.teams, queryFn: fetchTeams });
-  const matches = useQuery({ queryKey: queryKeys.matches, queryFn: fetchMatches });
-  const { edit } = Route.useSearch();
-  const editingMatch = matches.data?.find((m) => m.id === edit);
 
-  const [p1, setP1] = useState<string>(editingMatch?.player1_id ?? "");
-  const [p2, setP2] = useState<string>(editingMatch?.player2_id ?? "");
-  const [t1, setT1] = useState<string>(editingMatch?.team1_id ?? "");
-  const [t2, setT2] = useState<string>(editingMatch?.team2_id ?? "");
-  const [s1, setS1] = useState<number>(editingMatch?.score1 ?? 0);
-  const [s2, setS2] = useState<number>(editingMatch?.score2 ?? 0);
-  const [date, setDate] = useState(editingMatch?.played_at ?? format(new Date(), "yyyy-MM-dd"));
-  const [notes, setNotes] = useState(editingMatch?.notes ?? "");
-
-  useEffect(() => {
-    if (!editingMatch) return;
-    setP1(editingMatch.player1_id);
-    setP2(editingMatch.player2_id);
-    setT1(editingMatch.team1_id ?? "");
-    setT2(editingMatch.team2_id ?? "");
-    setS1(editingMatch.score1);
-    setS2(editingMatch.score2);
-    setDate(editingMatch.played_at);
-    setNotes(editingMatch.notes ?? "");
-  }, [editingMatch]);
+  const [p1, setP1] = useState<string>("");
+  const [p2, setP2] = useState<string>("");
+  const [t1, setT1] = useState<string>("");
+  const [t2, setT2] = useState<string>("");
+  const [s1, setS1] = useState<number>(0);
+  const [s2, setS2] = useState<number>(0);
+  const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd"));
+  const [notes, setNotes] = useState("");
 
   const team1 = teams.data?.find(x => x.id === t1);
   const team2 = teams.data?.find(x => x.id === t2);
@@ -68,16 +50,13 @@ function NewMatch() {
     mutationFn: async () => {
       if (!p1 || !p2) throw new Error(t("match.select_player"));
       if (p1 === p2) throw new Error("Players must be different");
-      const payload = {
+      const { error } = await supabase.from("matches").insert({
         played_at: date,
         player1_id: p1, player2_id: p2,
         team1_id: t1 || null, team2_id: t2 || null,
         score1: s1, score2: s2,
         notes: notes.trim() || null,
-      };
-      const { error } = edit
-        ? await supabase.from("matches").update(payload).eq("id", edit)
-        : await supabase.from("matches").insert(payload);
+      });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -92,12 +71,12 @@ function NewMatch() {
   const noPlayers = (players.data?.length ?? 0) < 2;
 
   return (
-    <AppLayout title={edit ? t("common.edit") : t("match.new_title")} subtitle={t("match.new_subtitle")}>
+    <AppLayout title={t("match.new_title")} subtitle={t("match.new_subtitle")}>
       {noPlayers && (
         <Card className="glass-card mb-4 border-[color:var(--draw)]/40">
           <CardContent className="py-4 text-sm">
             {t("match.need_players")}{" "}
-            <button type="button" onClick={() => navigate({ to: "/players" })} className="text-primary underline font-semibold">{t("match.add_players_first")}</button>.
+            <a href="/players" className="text-primary underline font-semibold">{t("match.add_players_first")}</a>.
           </CardContent>
         </Card>
       )}
@@ -174,86 +153,44 @@ function TeamPicker({ teams, value, onChange }: {
   const filtered = teams.filter(x =>
     x.name.toLowerCase().includes(q.toLowerCase()) || x.country.toLowerCase().includes(q.toLowerCase())
   );
-
   return (
-    <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="tap w-full rounded-xl border bg-foreground/[0.03] px-3 py-2 text-left text-sm font-medium flex items-center gap-2 min-w-0"
-      >
-        {selected ? (
-          <>
-            <TeamCrest team={selected} size={24} />
-            <span className="truncate flex-1">{selected.name}</span>
-          </>
-        ) : (
-          <span className="text-muted-foreground">{t("match.select_team")}</span>
-        )}
-      </button>
-
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-lg max-h-[85vh] flex flex-col gap-3">
-          <DialogHeader>
-            <DialogTitle>{t("match.select_team")}</DialogTitle>
-            <DialogDescription className="sr-only">{t("match.filter_team")}</DialogDescription>
-          </DialogHeader>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button className="tap w-full rounded-xl border bg-foreground/[0.03] px-3 py-2 text-left text-sm font-medium flex items-center gap-2 min-w-0">
+          {selected ? (
+            <>
+              <TeamCrest team={selected} size={24} />
+              <span className="truncate flex-1">{selected.name}</span>
+            </>
+          ) : (
+            <span className="text-muted-foreground">{t("match.select_team")}</span>
+          )}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="p-0 w-[280px]" align="start">
+        <div className="p-2 border-b">
           <div className="relative">
-            <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder={t("common.search")}
-              className="pl-9 h-11 rounded-xl"
-              autoFocus
-            />
+            <Search className="size-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("common.search")} className="pl-8 h-9 rounded-lg" autoFocus />
           </div>
-          <div className="overflow-y-auto -mx-1 px-1">
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 pb-2">
-              {filtered.map((tm) => {
-                const isSel = tm.id === value;
-                return (
-                  <button
-                    key={tm.id}
-                    type="button"
-                    onClick={() => { onChange(tm.id); setOpen(false); setQ(""); }}
-                    className={cn(
-                      "tap relative rounded-2xl p-3 flex flex-col items-center gap-2 border bg-foreground/[0.03] transition-all",
-                      isSel
-                        ? "border-primary ring-2 ring-primary/60 shadow-[0_0_30px_-6px_var(--primary)] bg-primary/5"
-                        : "border-foreground/10 hover:border-foreground/30"
-                    )}
-                  >
-                    <TeamCrest team={tm} size={56} />
-                    <div className="min-w-0 w-full text-center">
-                      <div className="truncate text-xs font-bold leading-tight">{tm.name}</div>
-                      <div className="truncate text-[9px] uppercase tracking-wider text-muted-foreground mt-0.5">{tm.country}</div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-            {value && (
-              <div className="pt-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-full rounded-xl text-muted-foreground"
-                  onClick={() => { onChange(""); setOpen(false); }}
-                >
-                  Limpar seleção
-                </Button>
+        </div>
+        <div className="max-h-72 overflow-y-auto p-1">
+          {filtered.map((tm) => (
+            <button
+              key={tm.id}
+              onClick={() => { onChange(tm.id); setOpen(false); setQ(""); }}
+              className="tap w-full flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-foreground/5"
+            >
+              <TeamCrest team={tm} size={28} />
+              <div className="min-w-0 text-left">
+                <div className="truncate font-semibold">{tm.name}</div>
+                <div className="truncate text-[10px] text-muted-foreground uppercase tracking-wider">{tm.country}</div>
               </div>
-            )}
-            {filtered.length === 0 && (
-              <div className="py-8 text-center text-sm text-muted-foreground">
-                {t("teams.empty")}
-              </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
+            </button>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
 
