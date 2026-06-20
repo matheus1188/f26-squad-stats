@@ -28,13 +28,14 @@ function initials(name: string) {
  * deterministic vector gradient when the country is unknown.
  */
 export function TeamCrest({ team, size = 40, className }: {
-  team?: { name: string; country: string } | null;
+  team?: { name: string; country: string; crest_url?: string } | null;
   size?: number;
   className?: string;
 }) {
   const name = team?.name ?? "—";
   const country = team?.country ?? "";
-  const flag = flagUrl(country, size > 64 ? "w320" : "w160");
+  const uploaded = team?.crest_url && /^https?:\/\//i.test(team.crest_url) ? team.crest_url : null;
+  const flag = !uploaded ? flagUrl(country, size > 64 ? "w320" : "w160") : null;
   const [c1, c2] = gradientFor(name + country);
   const mono = initials(name);
 
@@ -45,23 +46,55 @@ export function TeamCrest({ team, size = 40, className }: {
       role="img"
       aria-label={`${name}${country ? ` (${country})` : ""}`}
     >
-      {flag && (
+      {uploaded ? (
         <img
-          src={flag}
-          alt=""
+          src={uploaded}
+          alt={name}
           loading="lazy"
           className="absolute inset-0 h-full w-full object-cover"
-          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
         />
+      ) : flag ? (
+        <>
+          <img
+            src={flag}
+            alt=""
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover"
+            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/45" />
+          <span
+            className="absolute inset-0 grid place-items-center font-display font-black text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
+            style={{ fontSize: Math.max(10, size * 0.42), lineHeight: 1 }}
+          >
+            {mono}
+          </span>
+        </>
+      ) : (
+        <>
+          {/* Default football-badge placeholder */}
+          <svg viewBox="0 0 64 64" className="absolute inset-0 h-full w-full" aria-hidden>
+            <defs>
+              <radialGradient id={`b${hash(name).toString(36)}`} cx="50%" cy="40%" r="60%">
+                <stop offset="0%" stopColor="white" stopOpacity="0.25" />
+                <stop offset="100%" stopColor="white" stopOpacity="0" />
+              </radialGradient>
+            </defs>
+            <circle cx="32" cy="32" r="22" fill="white" fillOpacity="0.95" />
+            <polygon points="32,16 38,22 36,30 28,30 26,22" fill="black" />
+            <polygon points="20,28 26,22 28,30 24,36 18,34" fill="black" />
+            <polygon points="44,28 38,22 36,30 40,36 46,34" fill="black" />
+            <polygon points="24,42 32,38 40,42 36,48 28,48" fill="black" />
+            <circle cx="32" cy="32" r="22" fill={`url(#b${hash(name).toString(36)})`} />
+          </svg>
+          <span
+            className="absolute inset-x-0 bottom-1 text-center font-display font-black text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
+            style={{ fontSize: Math.max(8, size * 0.2), lineHeight: 1 }}
+          >
+            {mono}
+          </span>
+        </>
       )}
-      {/* readability scrim */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/45" />
-      <span
-        className="absolute inset-0 grid place-items-center font-display font-black text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
-        style={{ fontSize: Math.max(10, size * 0.42), lineHeight: 1 }}
-      >
-        {mono}
-      </span>
     </div>
   );
 }
