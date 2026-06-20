@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Plus, Pencil, Trash2, Search, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { TeamCrest } from "@/components/TeamCrest";
+import { ImageUpload } from "@/components/ImageUpload";
 import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/teams")({
@@ -145,9 +146,25 @@ function TeamDialog({ open, onOpenChange, team }: { open: boolean; onOpenChange:
             <Label htmlFor="t-country">{t("common.country")}</Label>
             <Input id="t-country" value={country} onChange={(e) => setCountry(e.target.value)} className="rounded-xl" />
           </div>
+          <div>
+            <Label>Escudo / imagem do time</Label>
+            <div className="mt-2">
+              <ImageUpload
+                value={/^https?:\/\//i.test(crest) ? crest : ""}
+                onChange={setCrest}
+                bucket="team-images"
+                shape="rounded"
+                size={88}
+                placeholder={<TeamCrest team={{ name: name || "?", country, crest_url: "" }} size={88} />}
+              />
+            </div>
+            <p className="mt-1.5 text-[11px] text-muted-foreground">
+              Sem imagem? Mostramos a bandeira do país ou um escudo padrão.
+            </p>
+          </div>
           {(name || country) && (
             <div className="flex items-center gap-3 rounded-2xl bg-foreground/[0.04] p-3">
-              <TeamCrest team={{ name: name || "Preview", country }} size={56} />
+              <TeamCrest team={{ name: name || "Preview", country, crest_url: crest }} size={56} />
               <div className="min-w-0">
                 <div className="text-xs text-muted-foreground">{t("common.preview")}</div>
                 <div className="font-bold truncate">{name || "—"}</div>
