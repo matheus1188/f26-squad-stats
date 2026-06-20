@@ -1,10 +1,7 @@
 import type { Team } from "@/lib/db";
 import { cn } from "@/lib/utils";
+import { flagUrl } from "@/lib/countries";
 
-/**
- * Vector-style team crest: deterministic gradient + monogram + optional country code.
- * Replaces realistic flag images with a clean, premium, consistent look.
- */
 function hash(str: string) {
   let h = 0;
   for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
@@ -25,10 +22,11 @@ function initials(name: string) {
   return (words[0][0] + words[1][0]).toUpperCase();
 }
 
-function countryCode(country: string) {
-  return country.replace(/[^\p{L}]/gu, "").slice(0, 3).toUpperCase();
-}
-
+/**
+ * Team crest: shows the real country flag as the background when the country
+ * resolves to an ISO code, with the team monogram overlaid. Falls back to a
+ * deterministic vector gradient when the country is unknown.
+ */
 export function TeamCrest({ team, size = 40, className }: {
   team?: { name: string; country: string } | null;
   size?: number;
@@ -36,41 +34,35 @@ export function TeamCrest({ team, size = 40, className }: {
 }) {
   const name = team?.name ?? "—";
   const country = team?.country ?? "";
+  const flag = flagUrl(country, size > 64 ? "w320" : "w160");
   const [c1, c2] = gradientFor(name + country);
-  const id = `g${hash(name + country).toString(36)}`;
   const mono = initials(name);
-  const code = countryCode(country);
+
   return (
-    <svg
-      width={size} height={size} viewBox="0 0 64 64"
-      className={cn("shrink-0 drop-shadow-sm", className)}
-      role="img" aria-label={name}
+    <div
+      className={cn("relative shrink-0 overflow-hidden rounded-[22%] ring-1 ring-black/20 shadow-md", className)}
+      style={{ width: size, height: size, background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+      role="img"
+      aria-label={`${name}${country ? ` (${country})` : ""}`}
     >
-      <defs>
-        <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor={c1} />
-          <stop offset="100%" stopColor={c2} />
-        </linearGradient>
-      </defs>
-      <rect x="2" y="2" width="60" height="60" rx="16" fill={`url(#${id})`} />
-      <rect x="2" y="2" width="60" height="60" rx="16" fill="white" fillOpacity="0.06" />
-      <path d="M2 18 Q 32 30 62 18" stroke="white" strokeOpacity="0.18" strokeWidth="1.2" fill="none" />
-      <path d="M2 46 Q 32 58 62 46" stroke="white" strokeOpacity="0.18" strokeWidth="1.2" fill="none" />
-      <text
-        x="32" y="38" textAnchor="middle"
-        fontFamily="ui-sans-serif, system-ui, -apple-system"
-        fontWeight="800" fontSize="22"
-        fill="white" fillOpacity="0.95"
-      >{mono}</text>
-      {code && (
-        <text
-          x="32" y="54" textAnchor="middle"
-          fontFamily="ui-sans-serif, system-ui"
-          fontWeight="700" fontSize="7"
-          fill="white" fillOpacity="0.8" letterSpacing="1"
-        >{code}</text>
+      {flag && (
+        <img
+          src={flag}
+          alt=""
+          loading="lazy"
+          className="absolute inset-0 h-full w-full object-cover"
+          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+        />
       )}
-    </svg>
+      {/* readability scrim */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/45" />
+      <span
+        className="absolute inset-0 grid place-items-center font-display font-black text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
+        style={{ fontSize: Math.max(10, size * 0.42), lineHeight: 1 }}
+      >
+        {mono}
+      </span>
+    </div>
   );
 }
 
