@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { Swords, Minus, Plus, Trophy, Search } from "lucide-react";
 import { useT } from "@/lib/i18n";
 import { celebrate } from "@/lib/celebrate";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/matches/new")({
@@ -153,44 +153,85 @@ function TeamPicker({ teams, value, onChange }: {
   const filtered = teams.filter(x =>
     x.name.toLowerCase().includes(q.toLowerCase()) || x.country.toLowerCase().includes(q.toLowerCase())
   );
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <button className="tap w-full rounded-xl border bg-foreground/[0.03] px-3 py-2 text-left text-sm font-medium flex items-center gap-2 min-w-0">
-          {selected ? (
-            <>
-              <TeamCrest team={selected} size={24} />
-              <span className="truncate flex-1">{selected.name}</span>
-            </>
-          ) : (
-            <span className="text-muted-foreground">{t("match.select_team")}</span>
-          )}
-        </button>
-      </PopoverTrigger>
-      <PopoverContent className="p-0 w-[280px]" align="start">
-        <div className="p-2 border-b">
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="tap w-full rounded-xl border bg-foreground/[0.03] px-3 py-2 text-left text-sm font-medium flex items-center gap-2 min-w-0"
+      >
+        {selected ? (
+          <>
+            <TeamCrest team={selected} size={24} />
+            <span className="truncate flex-1">{selected.name}</span>
+          </>
+        ) : (
+          <span className="text-muted-foreground">{t("match.select_team")}</span>
+        )}
+      </button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-lg max-h-[85vh] flex flex-col gap-3">
+          <DialogHeader>
+            <DialogTitle>{t("match.select_team")}</DialogTitle>
+          </DialogHeader>
           <div className="relative">
-            <Search className="size-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("common.search")} className="pl-8 h-9 rounded-lg" autoFocus />
+            <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder={t("common.search")}
+              className="pl-9 h-11 rounded-xl"
+              autoFocus
+            />
           </div>
-        </div>
-        <div className="max-h-72 overflow-y-auto p-1">
-          {filtered.map((tm) => (
-            <button
-              key={tm.id}
-              onClick={() => { onChange(tm.id); setOpen(false); setQ(""); }}
-              className="tap w-full flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-foreground/5"
-            >
-              <TeamCrest team={tm} size={28} />
-              <div className="min-w-0 text-left">
-                <div className="truncate font-semibold">{tm.name}</div>
-                <div className="truncate text-[10px] text-muted-foreground uppercase tracking-wider">{tm.country}</div>
+          <div className="overflow-y-auto -mx-1 px-1">
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 pb-2">
+              {filtered.map((tm) => {
+                const isSel = tm.id === value;
+                return (
+                  <button
+                    key={tm.id}
+                    type="button"
+                    onClick={() => { onChange(tm.id); setOpen(false); setQ(""); }}
+                    className={cn(
+                      "tap relative rounded-2xl p-3 flex flex-col items-center gap-2 border bg-foreground/[0.03] transition-all",
+                      isSel
+                        ? "border-primary ring-2 ring-primary/60 shadow-[0_0_30px_-6px_var(--primary)] bg-primary/5"
+                        : "border-foreground/10 hover:border-foreground/30"
+                    )}
+                  >
+                    <TeamCrest team={tm} size={56} />
+                    <div className="min-w-0 w-full text-center">
+                      <div className="truncate text-xs font-bold leading-tight">{tm.name}</div>
+                      <div className="truncate text-[9px] uppercase tracking-wider text-muted-foreground mt-0.5">{tm.country}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+            {value && (
+              <div className="pt-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full rounded-xl text-muted-foreground"
+                  onClick={() => { onChange(""); setOpen(false); }}
+                >
+                  Limpar seleção
+                </Button>
               </div>
-            </button>
-          ))}
-        </div>
-      </PopoverContent>
-    </Popover>
+            )}
+            {filtered.length === 0 && (
+              <div className="py-8 text-center text-sm text-muted-foreground">
+                {t("teams.empty")}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
