@@ -15,6 +15,7 @@ import { Plus, Pencil, Trash2, User2, ChevronDown, Flame } from "lucide-react";
 import { toast } from "sonner";
 import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+import { DEFAULT_AVATARS } from "@/lib/default-avatars";
 
 export const Route = createFileRoute("/players")({
   head: () => ({ meta: [{ title: "Players — GolaçoCup" }] }),
@@ -190,7 +191,38 @@ function PlayerDialog({ open, onOpenChange, player }: { open: boolean; onOpenCha
             <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Marco" autoFocus className="rounded-xl" />
           </div>
           <div>
-            <Label htmlFor="avatar">{t("players.avatar_url")}</Label>
+            <Label>Escolha um ícone</Label>
+            <div className="mt-2 grid grid-cols-6 gap-2">
+              {DEFAULT_AVATARS.map((url) => {
+                const selected = avatar === url;
+                return (
+                  <button
+                    key={url}
+                    type="button"
+                    onClick={() => setAvatar(url)}
+                    className={cn(
+                      "relative aspect-square rounded-xl overflow-hidden ring-2 transition tap",
+                      selected ? "ring-primary scale-105" : "ring-transparent hover:ring-foreground/20"
+                    )}
+                    aria-label="Escolher avatar"
+                  >
+                    <img src={url} alt="" className="h-full w-full object-cover bg-foreground/5" />
+                  </button>
+                );
+              })}
+            </div>
+            {avatar && (
+              <button
+                type="button"
+                onClick={() => setAvatar("")}
+                className="mt-2 text-xs text-muted-foreground hover:text-foreground underline"
+              >
+                Remover ícone
+              </button>
+            )}
+          </div>
+          <div>
+            <Label htmlFor="avatar">{t("players.avatar_url")} <span className="text-xs text-muted-foreground">(opcional)</span></Label>
             <Input id="avatar" value={avatar} onChange={(e) => setAvatar(e.target.value)} placeholder="https://..." className="rounded-xl" />
           </div>
         </div>
