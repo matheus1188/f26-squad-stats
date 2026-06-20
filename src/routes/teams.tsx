@@ -34,11 +34,17 @@ function TeamsPage() {
 
   const del = useMutation({
     mutationFn: async (id: string) => {
-      const { error: matchError } = await supabase
+      const { error: team1Error } = await supabase
         .from("matches")
-        .update({ team1_id: null, team2_id: null })
-        .or(`team1_id.eq.${id},team2_id.eq.${id}`);
-      if (matchError) throw matchError;
+        .update({ team1_id: null })
+        .eq("team1_id", id);
+      if (team1Error) throw team1Error;
+
+      const { error: team2Error } = await supabase
+        .from("matches")
+        .update({ team2_id: null })
+        .eq("team2_id", id);
+      if (team2Error) throw team2Error;
 
       const { error: teamError } = await supabase.from("teams").delete().eq("id", id);
       if (teamError) throw teamError;
