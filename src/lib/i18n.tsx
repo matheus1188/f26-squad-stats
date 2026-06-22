@@ -135,6 +135,16 @@ const en: Dict = {
   "settings.reset_confirm_body": "This permanently deletes all players, teams and matches.",
   "settings.reset_done": "All data reset",
   "settings.about": "About",
+  "settings.customization": "Customization",
+  "settings.primary_color": "Primary color",
+  "settings.color_blue": "Blue",
+  "settings.color_green": "Green",
+  "settings.color_purple": "Purple",
+  "settings.color_pink": "Pink",
+  "settings.data": "Data",
+  "settings.export": "Export data",
+  "settings.export_help": "Download all your players, teams and matches as JSON.",
+  "settings.exported": "Data exported",
   "celebration.winner": "{name} wins!",
 };
 
