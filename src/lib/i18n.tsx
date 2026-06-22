@@ -149,6 +149,18 @@ const en: Dict = {
   "settings.export": "Export data",
   "settings.export_help": "Download all your players, teams and matches as JSON.",
   "settings.exported": "Data exported",
+  "match.filter_winner": "Winner",
+  "match.search_placeholder": "Search player or notes…",
+  "match.sort": "Sort",
+  "match.sort_newest": "Newest first",
+  "match.sort_oldest": "Oldest first",
+  "match.sort_goals": "Most goals",
+  "match.details": "Match details",
+  "match.total_goals": "Total goals",
+  "match.goal_diff": "Goal difference",
+  "match.edit_title": "Edit match",
+  "match.updated": "Match updated",
+  "match.swipe_hint": "Swipe ← to delete · → to edit",
   "celebration.winner": "{name} wins!",
 };
 
