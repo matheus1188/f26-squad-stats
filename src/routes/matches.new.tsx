@@ -147,7 +147,7 @@ function NewMatch() {
           </Button>
         </CardContent>
       </Card>
-      </Card>
+
 
       <Dialog open={celebrateOpen} onOpenChange={(o) => { if (!o) closeCelebration(); }}>
         <DialogContent className="glass-card max-w-md rounded-3xl border-primary/40 shadow-[0_0_60px_-8px_var(--primary)] p-0 overflow-hidden">
