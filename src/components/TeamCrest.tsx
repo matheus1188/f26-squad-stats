@@ -2,8 +2,8 @@ import type { Team } from "@/lib/db";
 import { cn } from "@/lib/utils";
 
 /**
- * Vector-style team crest: deterministic gradient + monogram + optional country code.
- * Replaces realistic flag images with a clean, premium, consistent look.
+ * Premium shield-shaped vector crest — neon outline, gradient fill, monogram + country code.
+ * Single visual style across every team to feel like an EA Sports / eFootball asset.
  */
 function hash(str: string) {
   let h = 0;
@@ -11,11 +11,16 @@ function hash(str: string) {
   return h;
 }
 
-function gradientFor(seed: string): [string, string] {
+// Per-team palette: pick a strong base hue then pair with neon green or blue accent.
+function paletteFor(seed: string): { fillA: string; fillB: string; accent: string; stroke: string } {
   const h = hash(seed);
-  const h1 = h % 360;
-  const h2 = (h1 + 40 + (h % 60)) % 360;
-  return [`hsl(${h1} 75% 55%)`, `hsl(${h2} 80% 45%)`];
+  const baseHue = h % 360;
+  const fillA = `hsl(${baseHue} 70% 22%)`;
+  const fillB = `hsl(${(baseHue + 20) % 360} 80% 12%)`;
+  const useGreen = (h >> 4) % 2 === 0;
+  const accent = useGreen ? "#39FF14" : "#00BFFF";
+  const stroke = useGreen ? "rgba(57,255,20,0.75)" : "rgba(0,191,255,0.75)";
+  return { fillA, fillB, accent, stroke };
 }
 
 function initials(name: string) {
@@ -36,38 +41,55 @@ export function TeamCrest({ team, size = 40, className }: {
 }) {
   const name = team?.name ?? "—";
   const country = team?.country ?? "";
-  const [c1, c2] = gradientFor(name + country);
+  const p = paletteFor(name + country);
   const id = `g${hash(name + country).toString(36)}`;
   const mono = initials(name);
   const code = countryCode(country);
+  // Shield path inside 64x72 viewBox
+  const shield = "M32 2 L62 10 L62 36 Q62 58 32 70 Q2 58 2 36 L2 10 Z";
+
   return (
     <svg
-      width={size} height={size} viewBox="0 0 64 64"
-      className={cn("shrink-0 drop-shadow-sm", className)}
+      width={size} height={size * (72 / 64)} viewBox="0 0 64 72"
+      className={cn("shrink-0", className)}
       role="img" aria-label={name}
+      style={{ filter: `drop-shadow(0 0 6px ${p.accent}40)` }}
     >
       <defs>
-        <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor={c1} />
-          <stop offset="100%" stopColor={c2} />
+        <linearGradient id={`f${id}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={p.fillA} />
+          <stop offset="100%" stopColor={p.fillB} />
+        </linearGradient>
+        <linearGradient id={`s${id}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4" />
+          <stop offset="40%" stopColor="#ffffff" stopOpacity="0" />
         </linearGradient>
       </defs>
-      <rect x="2" y="2" width="60" height="60" rx="16" fill={`url(#${id})`} />
-      <rect x="2" y="2" width="60" height="60" rx="16" fill="white" fillOpacity="0.06" />
-      <path d="M2 18 Q 32 30 62 18" stroke="white" strokeOpacity="0.18" strokeWidth="1.2" fill="none" />
-      <path d="M2 46 Q 32 58 62 46" stroke="white" strokeOpacity="0.18" strokeWidth="1.2" fill="none" />
+      {/* outer neon stroke */}
+      <path d={shield} fill={`url(#f${id})`} stroke={p.stroke} strokeWidth="1.6" />
+      {/* inner highlight */}
+      <path d={shield} fill={`url(#s${id})`} />
+      {/* accent diagonal */}
+      <path d="M2 32 L62 12" stroke={p.accent} strokeOpacity="0.55" strokeWidth="1.3" />
+      <path d="M2 44 L62 24" stroke={p.accent} strokeOpacity="0.25" strokeWidth="1" />
+      {/* star above monogram */}
+      <polygon
+        points="32,12 33.2,15.3 36.5,15.3 33.8,17.4 34.9,20.7 32,18.7 29.1,20.7 30.2,17.4 27.5,15.3 30.8,15.3"
+        fill={p.accent} fillOpacity="0.85"
+      />
+      {/* monogram */}
       <text
-        x="32" y="38" textAnchor="middle"
-        fontFamily="ui-sans-serif, system-ui, -apple-system"
-        fontWeight="800" fontSize="22"
-        fill="white" fillOpacity="0.95"
+        x="32" y="46" textAnchor="middle"
+        fontFamily="Orbitron, ui-sans-serif, system-ui"
+        fontWeight="900" fontSize="20"
+        fill="#ffffff"
       >{mono}</text>
       {code && (
         <text
-          x="32" y="54" textAnchor="middle"
+          x="32" y="62" textAnchor="middle"
           fontFamily="ui-sans-serif, system-ui"
           fontWeight="700" fontSize="7"
-          fill="white" fillOpacity="0.8" letterSpacing="1"
+          fill={p.accent} letterSpacing="1.2"
         >{code}</text>
       )}
     </svg>
