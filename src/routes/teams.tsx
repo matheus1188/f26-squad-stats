@@ -15,7 +15,7 @@ import { TeamCrest } from "@/components/TeamCrest";
 import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/teams")({
-  head: () => ({ meta: [{ title: "Teams — F26 Arena" }] }),
+  head: () => ({ meta: [{ title: "Teams — GOLAÇO CUP" }] }),
   component: TeamsPage,
 });
 
@@ -68,25 +68,45 @@ function TeamsPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3">
           {filtered.map((tm, i) => (
-            <Card key={tm.id} className="glass-card tap float-in" style={{ animationDelay: `${i * 15}ms` }}>
-              <CardContent className="p-4">
-                <div className="grid place-items-center mb-3">
-                  <TeamCrest team={tm} size={84} />
+            <Card
+              key={tm.id}
+              className="glass-card tap float-in relative overflow-hidden group"
+              style={{ animationDelay: `${Math.min(i, 20) * 18}ms` }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-[color:var(--accent)]/10 opacity-60 pointer-events-none" />
+              <CardContent className="p-3 relative">
+                <div className="grid place-items-center mb-2">
+                  <TeamCrest team={tm} size={64} />
                 </div>
                 <div className="min-w-0 text-center">
-                  <div className="font-bold text-sm truncate">{tm.name}</div>
-                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground truncate mt-0.5">{tm.country}</div>
+                  <div className="font-bold text-[12px] truncate leading-tight">{tm.name}</div>
+                  <div className="text-[9px] uppercase tracking-widest text-muted-foreground truncate mt-0.5">
+                    {tm.country}
+                  </div>
                 </div>
-                <div className="mt-2 flex gap-1 justify-center">
-                  <Button size="icon" variant="ghost" className="size-8 rounded-full"
-                    onClick={() => { setEditing(tm); setOpen(true); }}>
-                    <Pencil className="size-3.5" />
+                <div className="mt-2 flex gap-1 justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="size-7 rounded-full"
+                    onClick={() => {
+                      setEditing(tm);
+                      setOpen(true);
+                    }}
+                  >
+                    <Pencil className="size-3" />
                   </Button>
-                  <Button size="icon" variant="ghost" className="size-8 rounded-full text-destructive"
-                    onClick={() => { if (confirm(t("teams.confirm_delete", { name: tm.name }))) del.mutate(tm.id); }}>
-                    <Trash2 className="size-3.5" />
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="size-7 rounded-full text-destructive"
+                    onClick={() => {
+                      if (confirm(t("teams.confirm_delete", { name: tm.name }))) del.mutate(tm.id);
+                    }}
+                  >
+                    <Trash2 className="size-3" />
                   </Button>
                 </div>
               </CardContent>
