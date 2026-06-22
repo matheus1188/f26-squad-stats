@@ -27,7 +27,6 @@ export function AppLayout({ children, title, subtitle, action }: {
   const mobileNav = [
     { to: "/", label: t("nav.dashboard"), icon: Home, exact: true },
     { to: "/matches", label: t("nav.matches"), icon: History },
-    { to: "/matches/new", label: t("nav.new"), icon: Plus, fab: true },
     { to: "/teams", label: t("nav.teams"), icon: Shield },
     { to: "/ranking", label: t("nav.ranking"), icon: Trophy },
     { to: "/stats", label: t("nav.stats"), icon: BarChart3 },
@@ -71,7 +70,7 @@ export function AppLayout({ children, title, subtitle, action }: {
       <header className="sticky top-0 z-20 px-4 pt-4 md:px-8 md:pt-8">
         <div className="glass-card rounded-3xl px-4 py-3 md:px-6 md:py-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 float-in">
           <div className="min-w-0">
-            <div className="md:hidden text-[10px] uppercase tracking-[0.25em] text-primary font-semibold">{appName}</div>
+            <div className="md:hidden text-[10px] uppercase tracking-[0.3em] font-bold brand-cup">{appName}</div>
             <h1 className="truncate text-xl md:text-3xl font-display font-black tracking-tight">{title}</h1>
             {subtitle && <p className="truncate text-xs md:text-sm text-muted-foreground mt-0.5">{subtitle}</p>}
           </div>
