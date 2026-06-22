@@ -2,6 +2,14 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 
 export type Lang = "en" | "pt" | "es";
 export type Theme = "light" | "dark" | "system";
+export type Accent = "blue" | "green" | "purple" | "pink";
+
+export const ACCENTS: { key: Accent; label: string; hex: string; glow: string }[] = [
+  { key: "blue",   label: "Blue",   hex: "#00BFFF", glow: "0,191,255" },
+  { key: "green",  label: "Green",  hex: "#39FF14", glow: "57,255,20" },
+  { key: "purple", label: "Purple", hex: "#b388ff", glow: "179,136,255" },
+  { key: "pink",   label: "Pink",   hex: "#ff5fa2", glow: "255,95,162" },
+];
 
 type Dict = Record<string, string>;
 
@@ -127,6 +135,16 @@ const en: Dict = {
   "settings.reset_confirm_body": "This permanently deletes all players, teams and matches.",
   "settings.reset_done": "All data reset",
   "settings.about": "About",
+  "settings.customization": "Customization",
+  "settings.primary_color": "Primary color",
+  "settings.color_blue": "Blue",
+  "settings.color_green": "Green",
+  "settings.color_purple": "Purple",
+  "settings.color_pink": "Pink",
+  "settings.data": "Data",
+  "settings.export": "Export data",
+  "settings.export_help": "Download all your players, teams and matches as JSON.",
+  "settings.exported": "Data exported",
   "celebration.winner": "{name} wins!",
 };
 
@@ -252,6 +270,16 @@ const pt: Dict = {
   "settings.reset_confirm_body": "Isso apaga permanentemente todos os jogadores, times e partidas.",
   "settings.reset_done": "Dados resetados",
   "settings.about": "Sobre",
+  "settings.customization": "Personalização",
+  "settings.primary_color": "Cor principal",
+  "settings.color_blue": "Azul",
+  "settings.color_green": "Verde",
+  "settings.color_purple": "Roxo",
+  "settings.color_pink": "Rosa",
+  "settings.data": "Dados",
+  "settings.export": "Exportar dados",
+  "settings.export_help": "Baixe todos os jogadores, times e partidas em JSON.",
+  "settings.exported": "Dados exportados",
   "celebration.winner": "{name} venceu!",
 };
 
@@ -377,6 +405,16 @@ const es: Dict = {
   "settings.reset_confirm_body": "Esto elimina permanentemente todos los jugadores, equipos y partidos.",
   "settings.reset_done": "Datos restablecidos",
   "settings.about": "Acerca de",
+  "settings.customization": "Personalización",
+  "settings.primary_color": "Color principal",
+  "settings.color_blue": "Azul",
+  "settings.color_green": "Verde",
+  "settings.color_purple": "Morado",
+  "settings.color_pink": "Rosa",
+  "settings.data": "Datos",
+  "settings.export": "Exportar datos",
+  "settings.export_help": "Descarga todos los jugadores, equipos y partidos en JSON.",
+  "settings.exported": "Datos exportados",
   "celebration.winner": "¡{name} gana!",
 };
 
@@ -392,12 +430,14 @@ type Settings = {
   lang: Lang;
   theme: Theme;
   appName: string;
+  accent: Accent;
 };
 
 type Ctx = Settings & {
   setLang: (l: Lang) => void;
   setTheme: (t: Theme) => void;
   setAppName: (n: string) => void;
+  setAccent: (a: Accent) => void;
   t: (key: string, vars?: Record<string, string | number>) => string;
 };
 
@@ -428,6 +468,17 @@ function applyTheme(theme: Theme) {
   document.documentElement.classList.toggle("light", !isDark);
 }
 
+function applyAccent(accent: Accent) {
+  if (typeof document === "undefined") return;
+  const def = ACCENTS.find((a) => a.key === accent) ?? ACCENTS[0];
+  const r = document.documentElement.style;
+  r.setProperty("--primary", def.hex);
+  r.setProperty("--ring", `rgba(${def.glow},0.55)`);
+  r.setProperty("--border", `rgba(${def.glow},0.18)`);
+  r.setProperty("--neon-blue", def.hex);
+  r.setProperty("--accent-glow", def.glow);
+}
+
 const DEFAULT_NAME = "GOLAÇO CUP";
 
 export function I18nProvider({ children }: { children: ReactNode }) {
@@ -435,6 +486,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("en");
   const [theme, setThemeState] = useState<Theme>("dark");
   const [appName, setAppNameState] = useState<string>(DEFAULT_NAME);
+  const [accent, setAccentState] = useState<Accent>("blue");
 
   useEffect(() => {
     const saved = readLS();
@@ -442,6 +494,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     setThemeState((saved.theme as Theme) ?? "dark");
     const savedName = saved.appName && saved.appName !== "F26 Arena" ? saved.appName : DEFAULT_NAME;
     setAppNameState(savedName);
+    setAccentState((saved.accent as Accent) ?? "blue");
     setHydrated(true);
   }, []);
 
@@ -456,21 +509,27 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!hydrated) return;
-    localStorage.setItem(LS_KEY, JSON.stringify({ lang, theme, appName }));
-  }, [lang, theme, appName, hydrated]);
+    applyAccent(accent);
+  }, [accent, hydrated]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    localStorage.setItem(LS_KEY, JSON.stringify({ lang, theme, appName, accent }));
+  }, [lang, theme, appName, accent, hydrated]);
 
   const value = useMemo<Ctx>(() => ({
-    lang, theme, appName,
+    lang, theme, appName, accent,
     setLang: setLangState,
     setTheme: setThemeState,
     setAppName: setAppNameState,
+    setAccent: setAccentState,
     t: (key, vars) => {
       const dict = dicts[lang] ?? en;
       let str = dict[key] ?? en[key] ?? key;
       if (vars) for (const [k, v] of Object.entries(vars)) str = str.replace(`{${k}}`, String(v));
       return str;
     },
-  }), [lang, theme, appName]);
+  }), [lang, theme, appName, accent]);
 
   return <I18nCtx.Provider value={value}>{children}</I18nCtx.Provider>;
 }
