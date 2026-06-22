@@ -277,6 +277,41 @@ function SettingsPage() {
           </CardContent>
         </Card>
 
+        {/* Experience toggles */}
+        <Card className="glass-card float-in">
+          <CardContent className="p-5 space-y-4">
+            <SectionHeader icon={<Zap className="size-4" />} label={t("settings.experience")} />
+            <ToggleRow
+              icon={<Zap className="size-4 text-primary" />}
+              label={t("settings.animations")}
+              help={t("settings.animations_help")}
+              checked={animations}
+              onChange={setAnimations}
+            />
+            <ToggleRow
+              icon={<Vibrate className="size-4 text-primary" />}
+              label={t("settings.haptics")}
+              help={t("settings.haptics_help")}
+              checked={haptics}
+              onChange={setHaptics}
+            />
+            <ToggleRow
+              icon={<Volume2 className="size-4 text-primary" />}
+              label={t("settings.sfx")}
+              help={t("settings.sfx_help")}
+              checked={sfx}
+              onChange={setSfx}
+            />
+            <ToggleRow
+              icon={<Music className="size-4 text-primary" />}
+              label={t("settings.music")}
+              help={t("settings.music_help")}
+              checked={music}
+              onChange={setMusic}
+            />
+          </CardContent>
+        </Card>
+
         <Card className="glass-card float-in">
           <CardContent className="p-5 flex items-center gap-3">
             <Sparkles className="size-5 text-primary" />
