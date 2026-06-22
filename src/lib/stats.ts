@@ -1,4 +1,5 @@
 import type { Match, Player, Team } from "./db";
+import { DEFAULT_RULES, type LeagueRules } from "./league";
 
 export type PlayerStats = {
   player: Player;
@@ -13,7 +14,11 @@ export type PlayerStats = {
   winRate: number;
 };
 
-export function computePlayerStats(players: Player[], matches: Match[]): PlayerStats[] {
+export function computePlayerStats(
+  players: Player[],
+  matches: Match[],
+  rules: LeagueRules = DEFAULT_RULES,
+): PlayerStats[] {
   const base = new Map<string, PlayerStats>();
   for (const p of players) {
     base.set(p.id, {
@@ -28,18 +33,29 @@ export function computePlayerStats(players: Player[], matches: Match[]): PlayerS
     s1.played++; s2.played++;
     s1.goalsFor += m.score1; s1.goalsAgainst += m.score2;
     s2.goalsFor += m.score2; s2.goalsAgainst += m.score1;
-    if (m.score1 > m.score2) { s1.wins++; s1.points += 3; s2.losses++; }
-    else if (m.score2 > m.score1) { s2.wins++; s2.points += 3; s1.losses++; }
-    else { s1.draws++; s2.draws++; s1.points++; s2.points++; }
+    if (m.score1 > m.score2) {
+      s1.wins++; s1.points += rules.winPoints;
+      s2.losses++; s2.points += rules.lossPoints;
+    } else if (m.score2 > m.score1) {
+      s2.wins++; s2.points += rules.winPoints;
+      s1.losses++; s1.points += rules.lossPoints;
+    } else {
+      s1.draws++; s2.draws++;
+      s1.points += rules.drawPoints; s2.points += rules.drawPoints;
+    }
   }
   const arr = [...base.values()];
   for (const s of arr) {
     s.goalDiff = s.goalsFor - s.goalsAgainst;
     s.winRate = s.played > 0 ? s.wins / s.played : 0;
   }
-  return arr.sort((a, b) =>
-    b.points - a.points || b.goalDiff - a.goalDiff || b.goalsFor - a.goalsFor || b.winRate - a.winRate || a.player.name.localeCompare(b.player.name)
-  );
+  return arr.sort((a, b) => {
+    if (b.points !== a.points) return b.points - a.points;
+    if (rules.useGoalDiff && b.goalDiff !== a.goalDiff) return b.goalDiff - a.goalDiff;
+    if (rules.useGoalsFor && b.goalsFor !== a.goalsFor) return b.goalsFor - a.goalsFor;
+    if (rules.useWinRate && b.winRate !== a.winRate) return b.winRate - a.winRate;
+    return a.player.name.localeCompare(b.player.name);
+  });
 }
 
 export function teamUsage(matches: Match[], teams: Team[]) {
