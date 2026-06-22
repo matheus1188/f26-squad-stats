@@ -80,36 +80,33 @@ export function AppLayout({ children, title, subtitle, action }: {
 
       <main key={pathname} className="px-4 md:px-8 py-5 md:py-6 float-in">{children}</main>
 
+      {/* Floating "new match" FAB */}
+      <Link
+        to="/matches/new"
+        aria-label={t("nav.new")}
+        className="md:hidden fixed right-4 bottom-[calc(env(safe-area-inset-bottom,0.5rem)+78px)] z-40 tap"
+      >
+        <span className="grid place-items-center size-14 rounded-full bg-gradient-to-br from-[#39FF14] to-[#00BFFF] text-[#02101f] shadow-xl shadow-[#00BFFF]/40 pulse-glow">
+          <Plus className="size-7" strokeWidth={3} />
+        </span>
+      </Link>
+
       {/* iOS-style bottom nav (mobile) */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 px-3 pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-2 pointer-events-none">
-        <div className="glass-card rounded-[28px] px-2 py-2 grid grid-cols-5 gap-1 pointer-events-auto">
+        <div className="glass-card rounded-[28px] px-2 py-2 grid grid-cols-6 gap-0.5 pointer-events-auto">
           {mobileNav.map((item) => {
             const active = item.exact ? pathname === item.to : pathname === item.to || pathname.startsWith(item.to + "/");
             const Icon = item.icon;
-            if (item.fab) {
-              return (
-                <Link
-                  key={item.to}
-                  to={item.to as never}
-                  className="tap flex items-center justify-center -mt-6"
-                  aria-label={item.label}
-                >
-                  <span className="grid place-items-center size-14 rounded-full bg-primary text-primary-foreground shadow-xl shadow-primary/40 pulse-glow">
-                    <Icon className="size-7" />
-                  </span>
-                </Link>
-              );
-            }
             return (
               <Link
                 key={item.to}
                 to={item.to as never}
                 className={cn(
-                  "tap flex flex-col items-center justify-center gap-1 py-2 rounded-2xl text-[10px] font-semibold transition-all",
-                  active ? "text-primary" : "text-muted-foreground",
+                  "tap flex flex-col items-center justify-center gap-1 py-1.5 rounded-2xl text-[9px] font-semibold transition-all",
+                  active ? "neon-text" : "text-muted-foreground",
                 )}
               >
-                <Icon className="size-5" />
+                <Icon className={cn("size-5", active && "drop-shadow-[0_0_8px_rgba(0,191,255,0.7)]")} />
                 <span className="truncate max-w-full">{item.label}</span>
               </Link>
             );
