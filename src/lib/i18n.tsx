@@ -529,7 +529,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       if (vars) for (const [k, v] of Object.entries(vars)) str = str.replace(`{${k}}`, String(v));
       return str;
     },
-  }), [lang, theme, appName]);
+  }), [lang, theme, appName, accent]);
 
   return <I18nCtx.Provider value={value}>{children}</I18nCtx.Provider>;
 }
