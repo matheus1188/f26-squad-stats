@@ -1,0 +1,3 @@
+ALTER TABLE public.players
+  ADD COLUMN IF NOT EXISTS favorite_team_id UUID REFERENCES public.teams(id) ON DELETE SET NULL,
+  ADD COLUMN IF NOT EXISTS notes TEXT;
