@@ -122,6 +122,22 @@ function SettingsPage() {
   return (
     <AppLayout title={t("settings.title")} subtitle={t("settings.subtitle")}>
       <div className="grid gap-4 max-w-2xl mx-auto w-full">
+        {/* League hub link */}
+        <Link to="/league" className="tap">
+          <Card className="glass-card neon-border float-in hover:bg-primary/5 transition-colors">
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="size-12 rounded-2xl bg-primary/15 grid place-items-center text-primary">
+                <Sparkles className="size-6" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-display font-bold">League, seasons & backup</div>
+                <p className="text-xs text-muted-foreground">Rules, champions, invites, achievements, export/import.</p>
+              </div>
+              <Check className="size-5 text-primary" />
+            </CardContent>
+          </Card>
+        </Link>
+
         {/* Language */}
         <Card className="glass-card float-in">
           <CardContent className="p-5">
