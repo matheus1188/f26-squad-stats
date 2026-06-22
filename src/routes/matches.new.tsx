@@ -10,17 +10,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { TeamCrest } from "@/components/TeamCrest";
 import { TeamGalleryButton } from "@/components/TeamGallery";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { Swords, Minus, Plus, Trophy } from "lucide-react";
+import { Swords, Minus, Plus, Trophy, Sparkles } from "lucide-react";
 import { useT } from "@/lib/i18n";
 import { celebrate } from "@/lib/celebrate";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/matches/new")({
-  head: () => ({ meta: [{ title: "New match — F26 Arena" }] }),
+  head: () => ({ meta: [{ title: "New match — GOLAÇO CUP" }] }),
   component: NewMatch,
 });
 
