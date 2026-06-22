@@ -7,13 +7,15 @@ import { computePlayerStats, matchWinner } from "@/lib/stats";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TeamCrest } from "@/components/TeamCrest";
+import { TrophyHero } from "@/components/TrophyHero";
+import { BrandLogo } from "@/components/BrandLogo";
 import { Trophy, Target, Flame, Gamepad2, Plus, ArrowRight, Crown, Sparkles } from "lucide-react";
 import { format, parseISO, subDays } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
-  head: () => ({ meta: [{ title: "F26 Arena" }] }),
+  head: () => ({ meta: [{ title: "GOLAÇO CUP — Battle Your Friends" }] }),
   component: Dashboard,
 });
 
@@ -52,10 +54,38 @@ function Dashboard() {
       subtitle={t("dashboard.subtitle")}
       action={
         <Link to="/matches/new" className="hidden md:inline-flex">
-          <Button className="gap-1.5 rounded-2xl tap"><Plus className="size-4" /> {t("common.new_match")}</Button>
+          <Button className="gap-1.5 rounded-2xl tap bg-gradient-to-r from-[#39FF14] to-[#00BFFF] text-[#02101f] hover:opacity-90 font-bold"><Plus className="size-4" /> {t("common.new_match")}</Button>
         </Link>
       }
     >
+      {/* Trophy hero */}
+      <section className="relative mb-6 md:mb-8 overflow-hidden rounded-[2rem] glass-card neon-border">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#00BFFF]/5 to-[#39FF14]/8 pointer-events-none" />
+        <div className="relative px-4 pt-6 pb-4 md:px-10 md:py-10 grid md:grid-cols-[1fr_auto] items-center gap-6">
+          <div className="text-center md:text-left order-2 md:order-1">
+            <BrandLogo size="lg" className="md:items-start" />
+            <p className="mt-4 text-sm md:text-base text-white/70 max-w-md mx-auto md:mx-0">
+              {t("dashboard.subtitle")}
+            </p>
+            <div className="mt-5 flex flex-wrap gap-2 justify-center md:justify-start">
+              <Link to="/matches/new">
+                <Button className="rounded-2xl tap bg-gradient-to-r from-[#39FF14] to-[#00BFFF] text-[#02101f] font-bold shadow-lg shadow-[#00BFFF]/30">
+                  <Plus className="size-4" /> {t("common.new_match")}
+                </Button>
+              </Link>
+              <Link to="/ranking">
+                <Button variant="outline" className="rounded-2xl tap border-[#00BFFF]/40 hover:bg-[#00BFFF]/10">
+                  <Trophy className="size-4" /> {t("nav.ranking")}
+                </Button>
+              </Link>
+            </div>
+          </div>
+          <div className="order-1 md:order-2 flex justify-center">
+            <TrophyHero size={220} />
+          </div>
+        </div>
+      </section>
+
       {/* Hero cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-4">
         {champion && (
