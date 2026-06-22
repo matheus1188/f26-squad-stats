@@ -51,11 +51,6 @@ export const Route = createFileRoute("/settings")({
 });
 
 function SettingsPage() {
-  const { t, lang, setLang, theme, setTheme, appName, setAppName, accent, setAccent } = useI18n();
-  const [name, setName] = useState(appName);
-  const [confirm, setConfirm] = useState(false);
-  const qc = useQueryClient();
-  const [resetting, setResetting] = useState(false);
   const {
     t, lang, setLang, theme, setTheme, appName, setAppName, accent, setAccent,
     animations, setAnimations, haptics, setHaptics, sfx, setSfx, music, setMusic,
