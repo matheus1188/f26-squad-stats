@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Users, Shield, Trophy, BarChart3, Settings, Plus, History, MoreHorizontal } from "lucide-react";
+import { Home, Users, Shield, Trophy, BarChart3, Settings, Plus, History, MoreHorizontal, Crown } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
@@ -21,6 +21,7 @@ export function AppLayout({ children, title, subtitle, action }: {
     { to: "/matches", label: t("nav.matches"), icon: History },
     { to: "/ranking", label: t("nav.ranking"), icon: Trophy },
     { to: "/stats", label: t("nav.stats"), icon: BarChart3 },
+    { to: "/league", label: "League", icon: Crown },
     { to: "/settings", label: t("nav.settings"), icon: Settings },
   ];
 
