@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Input } from "@/components/ui/input";
 import { TeamCrest } from "@/components/TeamCrest";
 import { Search, X, ChevronLeft } from "lucide-react";
@@ -97,9 +98,9 @@ export function TeamGalleryModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="p-0 gap-0 max-w-full sm:max-w-2xl w-screen h-[100dvh] sm:h-[88vh] sm:rounded-3xl rounded-none overflow-hidden border-primary/20"
-        showCloseButton={false}
+        className="p-0 gap-0 max-w-full sm:max-w-2xl w-screen h-[100dvh] sm:h-[88vh] sm:rounded-3xl rounded-none overflow-hidden border-primary/20 flex flex-col [&>button.absolute]:hidden"
       >
+        <VisuallyHidden><DialogTitle>{t("teams.title")}</DialogTitle></VisuallyHidden>
         {/* Header */}
         <div className="px-4 pt-[max(env(safe-area-inset-top),1rem)] pb-3 border-b border-border/60 bg-gradient-to-b from-background/95 to-background/80 backdrop-blur-xl">
           <div className="flex items-center gap-2">
