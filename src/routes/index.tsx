@@ -13,6 +13,7 @@ import { Trophy, Target, Flame, Gamepad2, Plus, ArrowRight, Crown, Sparkles } fr
 import { format, parseISO, subDays } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { useT } from "@/lib/i18n";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [{ title: "GOLAÇO CUP — Battle Your Friends" }] }),
@@ -95,15 +96,17 @@ function Dashboard() {
               <div className="flex items-center gap-2 text-[#f5d142] text-xs font-bold uppercase tracking-widest">
                 <Crown className="size-4 crown-bob" /> {t("dashboard.champion_week")}
               </div>
-              <div className="mt-3 flex items-center justify-between">
-                <div className="min-w-0">
-                  <div className="font-display text-2xl font-black truncate">{champion.player.name}</div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    {champion.wins}W · {champion.draws}D · {champion.losses}L · {champion.points} pts
-                  </div>
-                </div>
-                <div className="size-16 grid place-items-center rounded-2xl bg-gradient-to-br from-[#f5d142] to-[#ff9a3c] text-[#02101f] font-display font-black text-3xl shadow-lg shadow-[#f5d142]/30">
+              <div className="mt-3 flex items-center gap-4">
+                <div className="size-16 shrink-0 grid place-items-center rounded-2xl bg-gradient-to-br from-[#f5d142] to-[#ff9a3c] text-[#02101f] font-display font-black text-2xl shadow-lg shadow-[#f5d142]/30 ring-2 ring-[#f5d142]/60">
                   {champion.player.name[0]?.toUpperCase()}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="font-display text-xl font-black truncate">{champion.player.name}</div>
+                  <div className="mt-2 grid grid-cols-3 gap-2 text-center">
+                    <ChampStat value={champion.wins} label="W" />
+                    <ChampStat value={champion.goalsFor} label="G" accent />
+                    <ChampStat value={computeStreak(champion.player.id, weekMatches)} label="🔥" />
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -238,4 +241,28 @@ function StatCard({ icon, label, value, sub, accent }: {
       </CardContent>
     </Card>
   );
+}
+
+function ChampStat({ value, label, accent }: { value: number; label: string; accent?: boolean }) {
+  return (
+    <div className="rounded-xl bg-foreground/[0.05] py-1.5 px-1">
+      <div className={cn("font-display font-black text-lg leading-none", accent ? "neon-text-green" : "neon-text")}>{value}</div>
+      <div className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold mt-0.5">{label}</div>
+    </div>
+  );
+}
+
+function computeStreak(playerId: string, matches: { player1_id: string; player2_id: string; score1: number; score2: number; played_at: string; created_at: string }[]) {
+  const sorted = [...matches]
+    .filter(m => m.player1_id === playerId || m.player2_id === playerId)
+    .sort((a, b) => (b.played_at + b.created_at).localeCompare(a.played_at + a.created_at));
+  let streak = 0;
+  for (const m of sorted) {
+    const w = matchWinner(m as never);
+    const isP1 = m.player1_id === playerId;
+    const won = (w === "p1" && isP1) || (w === "p2" && !isP1);
+    if (won) streak++;
+    else break;
+  }
+  return streak;
 }

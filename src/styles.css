@@ -184,21 +184,26 @@ html.light .glass-card {
 
 /* === BRAND LOGO === */
 .brand-silver {
-  background: linear-gradient(180deg, #ffffff 0%, #d6dae2 40%, #8a93a3 70%, #f3f5f9 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #d6dae2 38%, #7a8493 72%, #f3f5f9 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 1px 0 rgba(0,0,0,0.4));
-  letter-spacing: 0.02em;
+  filter:
+    drop-shadow(0 1px 0 rgba(0,0,0,0.5))
+    drop-shadow(0 0 10px rgba(57,255,20,0.25));
+  letter-spacing: 0.01em;
+  font-style: italic;
+  -webkit-text-stroke: 1px rgba(57,255,20,0.25);
 }
 .brand-cup {
-  background: linear-gradient(90deg, #39FF14 0%, #00BFFF 100%);
+  background: linear-gradient(95deg, #39FF14 0%, #00E5A0 45%, #00BFFF 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   text-shadow: 0 0 28px rgba(0,191,255,0.35);
-  filter: drop-shadow(0 0 14px rgba(57,255,20,0.35));
+  filter: drop-shadow(0 0 14px rgba(57,255,20,0.4));
   letter-spacing: 0.04em;
+  font-style: italic;
 }
 
 /* === TROPHY ANIMATIONS === */
