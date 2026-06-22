@@ -131,8 +131,8 @@ const en: Dict = {
 };
 
 const pt: Dict = {
-  "app.name": "F26 Arena",
-  "app.tagline": "Placar entre amigos",
+  "app.name": "GOLAÇO CUP",
+  "app.tagline": "Desafie seus amigos",
   "nav.dashboard": "Início",
   "nav.players": "Jogadores",
   "nav.teams": "Times",
@@ -256,8 +256,8 @@ const pt: Dict = {
 };
 
 const es: Dict = {
-  "app.name": "F26 Arena",
-  "app.tagline": "Marcador entre amigos",
+  "app.name": "GOLAÇO CUP",
+  "app.tagline": "Desafía a tus amigos",
   "nav.dashboard": "Inicio",
   "nav.players": "Jugadores",
   "nav.teams": "Equipos",
