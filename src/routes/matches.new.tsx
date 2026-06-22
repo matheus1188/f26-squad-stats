@@ -147,6 +147,52 @@ function NewMatch() {
           </Button>
         </CardContent>
       </Card>
+      </Card>
+
+      <Dialog open={celebrateOpen} onOpenChange={(o) => { if (!o) closeCelebration(); }}>
+        <DialogContent className="glass-card max-w-md rounded-3xl border-primary/40 shadow-[0_0_60px_-8px_var(--primary)] p-0 overflow-hidden">
+          <VisuallyHidden><DialogTitle>{winner ? t("celebration.winner", { name: winner }) : t("match.draw")}</DialogTitle></VisuallyHidden>
+          <div className="relative p-6 text-center space-y-5">
+            <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-[color:var(--accent)]/10 pointer-events-none" />
+            <div className="relative flex justify-center">
+              <div className={cn(
+                "size-16 rounded-full grid place-items-center",
+                winner ? "bg-[color:var(--win)]/20 text-[color:var(--win)] celebrate" : "bg-[color:var(--draw)]/20 text-[color:var(--draw)]"
+              )}>
+                {winner ? <Trophy className="size-9" /> : <Sparkles className="size-9" />}
+              </div>
+            </div>
+            <div className="relative">
+              <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold mb-1">
+                {winner ? t("match.winner") : t("match.draw")}
+              </div>
+              <div className="font-display font-black text-3xl tracking-tight">
+                {winner ? t("celebration.winner", { name: winner }) : t("match.draw")}
+              </div>
+            </div>
+            {winnerTeam && (
+              <div className="relative flex flex-col items-center gap-2">
+                <TeamCrest team={winnerTeam} size={96} className="celebrate" />
+                <div className="font-bold">{winnerTeam.name}</div>
+              </div>
+            )}
+            <div className="relative grid grid-cols-3 items-center gap-2 py-3 rounded-2xl bg-foreground/[0.04] border border-border/60">
+              <div className="text-center">
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{player1?.name ?? "P1"}</div>
+                <div className="font-display font-black text-4xl tabular-nums">{s1}</div>
+              </div>
+              <div className="font-display font-black text-xl text-muted-foreground">—</div>
+              <div className="text-center">
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{player2?.name ?? "P2"}</div>
+                <div className="font-display font-black text-4xl tabular-nums">{s2}</div>
+              </div>
+            </div>
+            <Button onClick={closeCelebration} className="relative w-full h-12 rounded-2xl font-bold pulse-glow">
+              {t("common.view_all")}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }
