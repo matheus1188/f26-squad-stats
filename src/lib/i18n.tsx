@@ -270,6 +270,16 @@ const pt: Dict = {
   "settings.reset_confirm_body": "Isso apaga permanentemente todos os jogadores, times e partidas.",
   "settings.reset_done": "Dados resetados",
   "settings.about": "Sobre",
+  "settings.customization": "Personalização",
+  "settings.primary_color": "Cor principal",
+  "settings.color_blue": "Azul",
+  "settings.color_green": "Verde",
+  "settings.color_purple": "Roxo",
+  "settings.color_pink": "Rosa",
+  "settings.data": "Dados",
+  "settings.export": "Exportar dados",
+  "settings.export_help": "Baixe todos os jogadores, times e partidas em JSON.",
+  "settings.exported": "Dados exportados",
   "celebration.winner": "{name} venceu!",
 };
 
@@ -395,6 +405,16 @@ const es: Dict = {
   "settings.reset_confirm_body": "Esto elimina permanentemente todos los jugadores, equipos y partidos.",
   "settings.reset_done": "Datos restablecidos",
   "settings.about": "Acerca de",
+  "settings.customization": "Personalización",
+  "settings.primary_color": "Color principal",
+  "settings.color_blue": "Azul",
+  "settings.color_green": "Verde",
+  "settings.color_purple": "Morado",
+  "settings.color_pink": "Rosa",
+  "settings.data": "Datos",
+  "settings.export": "Exportar datos",
+  "settings.export_help": "Descarga todos los jugadores, equipos y partidos en JSON.",
+  "settings.exported": "Datos exportados",
   "celebration.winner": "¡{name} gana!",
 };
 
