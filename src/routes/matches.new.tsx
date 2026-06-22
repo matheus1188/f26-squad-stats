@@ -11,12 +11,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TeamCrest } from "@/components/TeamCrest";
+import { TeamGalleryButton } from "@/components/TeamGallery";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { Swords, Minus, Plus, Trophy, Search } from "lucide-react";
+import { Swords, Minus, Plus, Trophy } from "lucide-react";
 import { useT } from "@/lib/i18n";
 import { celebrate } from "@/lib/celebrate";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/matches/new")({
@@ -142,57 +142,6 @@ function NewMatch() {
   );
 }
 
-function TeamPicker({ teams, value, onChange }: {
-  teams: { id: string; name: string; country: string; crest_url: string; created_at: string }[];
-  value: string; onChange: (v: string) => void;
-}) {
-  const t = useT();
-  const [open, setOpen] = useState(false);
-  const [q, setQ] = useState("");
-  const selected = teams.find(x => x.id === value);
-  const filtered = teams.filter(x =>
-    x.name.toLowerCase().includes(q.toLowerCase()) || x.country.toLowerCase().includes(q.toLowerCase())
-  );
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <button className="tap w-full rounded-xl border bg-foreground/[0.03] px-3 py-2 text-left text-sm font-medium flex items-center gap-2 min-w-0">
-          {selected ? (
-            <>
-              <TeamCrest team={selected} size={24} />
-              <span className="truncate flex-1">{selected.name}</span>
-            </>
-          ) : (
-            <span className="text-muted-foreground">{t("match.select_team")}</span>
-          )}
-        </button>
-      </PopoverTrigger>
-      <PopoverContent className="p-0 w-[280px]" align="start">
-        <div className="p-2 border-b">
-          <div className="relative">
-            <Search className="size-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("common.search")} className="pl-8 h-9 rounded-lg" autoFocus />
-          </div>
-        </div>
-        <div className="max-h-72 overflow-y-auto p-1">
-          {filtered.map((tm) => (
-            <button
-              key={tm.id}
-              onClick={() => { onChange(tm.id); setOpen(false); setQ(""); }}
-              className="tap w-full flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm hover:bg-foreground/5"
-            >
-              <TeamCrest team={tm} size={28} />
-              <div className="min-w-0 text-left">
-                <div className="truncate font-semibold">{tm.name}</div>
-                <div className="truncate text-[10px] text-muted-foreground uppercase tracking-wider">{tm.country}</div>
-              </div>
-            </button>
-          ))}
-        </div>
-      </PopoverContent>
-    </Popover>
-  );
-}
 
 function PlayerSide(props: {
   label: string;
@@ -223,7 +172,7 @@ function PlayerSide(props: {
         </SelectContent>
       </Select>
 
-      <TeamPicker teams={props.teams} value={props.teamId} onChange={props.onTeamChange} />
+      <TeamGalleryButton teams={props.teams} value={props.teamId} onChange={props.onTeamChange} accent={props.accent} />
 
       <div className="grid place-items-center py-2">
         <TeamCrest team={props.team} size={72} className={props.winning ? "celebrate" : ""} />
