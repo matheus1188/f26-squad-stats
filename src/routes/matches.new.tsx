@@ -10,17 +10,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { TeamCrest } from "@/components/TeamCrest";
 import { TeamGalleryButton } from "@/components/TeamGallery";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { Swords, Minus, Plus, Trophy } from "lucide-react";
+import { Swords, Minus, Plus, Trophy, Sparkles } from "lucide-react";
 import { useT } from "@/lib/i18n";
 import { celebrate } from "@/lib/celebrate";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/matches/new")({
-  head: () => ({ meta: [{ title: "New match — F26 Arena" }] }),
+  head: () => ({ meta: [{ title: "New match — GOLAÇO CUP" }] }),
   component: NewMatch,
 });
 
@@ -39,12 +41,14 @@ function NewMatch() {
   const [s2, setS2] = useState<number>(0);
   const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [notes, setNotes] = useState("");
+  const [celebrateOpen, setCelebrateOpen] = useState(false);
 
   const team1 = teams.data?.find(x => x.id === t1);
   const team2 = teams.data?.find(x => x.id === t2);
   const player1 = players.data?.find(x => x.id === p1);
   const player2 = players.data?.find(x => x.id === p2);
   const winner = s1 > s2 ? player1?.name : s2 > s1 ? player2?.name : null;
+  const winnerTeam = s1 > s2 ? team1 : s2 > s1 ? team2 : null;
 
   const save = useMutation({
     mutationFn: async () => {
@@ -63,10 +67,15 @@ function NewMatch() {
       qc.invalidateQueries({ queryKey: queryKeys.matches });
       if (s1 !== s2) celebrate();
       toast.success(t("match.saved"));
-      setTimeout(() => navigate({ to: "/matches" }), 400);
+      setCelebrateOpen(true);
     },
     onError: (e: Error) => toast.error(e.message),
   });
+
+  const closeCelebration = () => {
+    setCelebrateOpen(false);
+    setTimeout(() => navigate({ to: "/matches" }), 150);
+  };
 
   const noPlayers = (players.data?.length ?? 0) < 2;
 
@@ -138,6 +147,52 @@ function NewMatch() {
           </Button>
         </CardContent>
       </Card>
+
+
+      <Dialog open={celebrateOpen} onOpenChange={(o) => { if (!o) closeCelebration(); }}>
+        <DialogContent className="glass-card max-w-md rounded-3xl border-primary/40 shadow-[0_0_60px_-8px_var(--primary)] p-0 overflow-hidden">
+          <VisuallyHidden><DialogTitle>{winner ? t("celebration.winner", { name: winner }) : t("match.draw")}</DialogTitle></VisuallyHidden>
+          <div className="relative p-6 text-center space-y-5">
+            <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-[color:var(--accent)]/10 pointer-events-none" />
+            <div className="relative flex justify-center">
+              <div className={cn(
+                "size-16 rounded-full grid place-items-center",
+                winner ? "bg-[color:var(--win)]/20 text-[color:var(--win)] celebrate" : "bg-[color:var(--draw)]/20 text-[color:var(--draw)]"
+              )}>
+                {winner ? <Trophy className="size-9" /> : <Sparkles className="size-9" />}
+              </div>
+            </div>
+            <div className="relative">
+              <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold mb-1">
+                {winner ? t("match.winner") : t("match.draw")}
+              </div>
+              <div className="font-display font-black text-3xl tracking-tight">
+                {winner ? t("celebration.winner", { name: winner }) : t("match.draw")}
+              </div>
+            </div>
+            {winnerTeam && (
+              <div className="relative flex flex-col items-center gap-2">
+                <TeamCrest team={winnerTeam} size={96} className="celebrate" />
+                <div className="font-bold">{winnerTeam.name}</div>
+              </div>
+            )}
+            <div className="relative grid grid-cols-3 items-center gap-2 py-3 rounded-2xl bg-foreground/[0.04] border border-border/60">
+              <div className="text-center">
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{player1?.name ?? "P1"}</div>
+                <div className="font-display font-black text-4xl tabular-nums">{s1}</div>
+              </div>
+              <div className="font-display font-black text-xl text-muted-foreground">—</div>
+              <div className="text-center">
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{player2?.name ?? "P2"}</div>
+                <div className="font-display font-black text-4xl tabular-nums">{s2}</div>
+              </div>
+            </div>
+            <Button onClick={closeCelebration} className="relative w-full h-12 rounded-2xl font-bold pulse-glow">
+              {t("common.view_all")}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }
