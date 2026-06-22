@@ -451,6 +451,18 @@ const es: Dict = {
   "settings.export": "Exportar datos",
   "settings.export_help": "Descarga todos los jugadores, equipos y partidos en JSON.",
   "settings.exported": "Datos exportados",
+  "match.filter_winner": "Ganador",
+  "match.search_placeholder": "Buscar jugador o nota…",
+  "match.sort": "Ordenar",
+  "match.sort_newest": "Más recientes",
+  "match.sort_oldest": "Más antiguos",
+  "match.sort_goals": "Más goles",
+  "match.details": "Detalles del partido",
+  "match.total_goals": "Goles totales",
+  "match.goal_diff": "Diferencia de goles",
+  "match.edit_title": "Editar partido",
+  "match.updated": "Partido actualizado",
+  "match.swipe_hint": "Desliza ← para eliminar · → para editar",
   "celebration.winner": "¡{name} gana!",
 };
 
