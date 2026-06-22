@@ -4,6 +4,8 @@ export type Player = {
   id: string;
   name: string;
   avatar_url: string | null;
+  favorite_team_id: string | null;
+  notes: string | null;
   created_at: string;
 };
 
