@@ -38,7 +38,7 @@ export function computePlayerStats(players: Player[], matches: Match[]): PlayerS
     s.winRate = s.played > 0 ? s.wins / s.played : 0;
   }
   return arr.sort((a, b) =>
-    b.points - a.points || b.goalDiff - a.goalDiff || b.goalsFor - a.goalsFor || a.player.name.localeCompare(b.player.name)
+    b.points - a.points || b.goalDiff - a.goalDiff || b.goalsFor - a.goalsFor || b.winRate - a.winRate || a.player.name.localeCompare(b.player.name)
   );
 }
 
