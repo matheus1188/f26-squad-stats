@@ -41,12 +41,14 @@ function NewMatch() {
   const [s2, setS2] = useState<number>(0);
   const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [notes, setNotes] = useState("");
+  const [celebrateOpen, setCelebrateOpen] = useState(false);
 
   const team1 = teams.data?.find(x => x.id === t1);
   const team2 = teams.data?.find(x => x.id === t2);
   const player1 = players.data?.find(x => x.id === p1);
   const player2 = players.data?.find(x => x.id === p2);
   const winner = s1 > s2 ? player1?.name : s2 > s1 ? player2?.name : null;
+  const winnerTeam = s1 > s2 ? team1 : s2 > s1 ? team2 : null;
 
   const save = useMutation({
     mutationFn: async () => {
@@ -65,10 +67,15 @@ function NewMatch() {
       qc.invalidateQueries({ queryKey: queryKeys.matches });
       if (s1 !== s2) celebrate();
       toast.success(t("match.saved"));
-      setTimeout(() => navigate({ to: "/matches" }), 400);
+      setCelebrateOpen(true);
     },
     onError: (e: Error) => toast.error(e.message),
   });
+
+  const closeCelebration = () => {
+    setCelebrateOpen(false);
+    setTimeout(() => navigate({ to: "/matches" }), 150);
+  };
 
   const noPlayers = (players.data?.length ?? 0) < 2;
 
