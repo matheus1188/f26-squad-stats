@@ -33,7 +33,12 @@ import {
   Languages,
   Type,
   Database,
+  Zap,
+  Vibrate,
+  Volume2,
+  Music,
 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchMatches, fetchPlayers, fetchTeams, queryKeys } from "@/lib/db";
@@ -47,6 +52,14 @@ export const Route = createFileRoute("/settings")({
 
 function SettingsPage() {
   const { t, lang, setLang, theme, setTheme, appName, setAppName, accent, setAccent } = useI18n();
+  const [name, setName] = useState(appName);
+  const [confirm, setConfirm] = useState(false);
+  const qc = useQueryClient();
+  const [resetting, setResetting] = useState(false);
+  const {
+    t, lang, setLang, theme, setTheme, appName, setAppName, accent, setAccent,
+    animations, setAnimations, haptics, setHaptics, sfx, setSfx, music, setMusic,
+  } = useI18n();
   const [name, setName] = useState(appName);
   const [confirm, setConfirm] = useState(false);
   const qc = useQueryClient();
