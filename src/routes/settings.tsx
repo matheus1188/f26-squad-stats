@@ -33,7 +33,12 @@ import {
   Languages,
   Type,
   Database,
+  Zap,
+  Vibrate,
+  Volume2,
+  Music,
 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchMatches, fetchPlayers, fetchTeams, queryKeys } from "@/lib/db";
@@ -46,7 +51,10 @@ export const Route = createFileRoute("/settings")({
 });
 
 function SettingsPage() {
-  const { t, lang, setLang, theme, setTheme, appName, setAppName, accent, setAccent } = useI18n();
+  const {
+    t, lang, setLang, theme, setTheme, appName, setAppName, accent, setAccent,
+    animations, setAnimations, haptics, setHaptics, sfx, setSfx, music, setMusic,
+  } = useI18n();
   const [name, setName] = useState(appName);
   const [confirm, setConfirm] = useState(false);
   const qc = useQueryClient();
@@ -269,6 +277,41 @@ function SettingsPage() {
           </CardContent>
         </Card>
 
+        {/* Experience toggles */}
+        <Card className="glass-card float-in">
+          <CardContent className="p-5 space-y-4">
+            <SectionHeader icon={<Zap className="size-4" />} label={t("settings.experience")} />
+            <ToggleRow
+              icon={<Zap className="size-4 text-primary" />}
+              label={t("settings.animations")}
+              help={t("settings.animations_help")}
+              checked={animations}
+              onChange={setAnimations}
+            />
+            <ToggleRow
+              icon={<Vibrate className="size-4 text-primary" />}
+              label={t("settings.haptics")}
+              help={t("settings.haptics_help")}
+              checked={haptics}
+              onChange={setHaptics}
+            />
+            <ToggleRow
+              icon={<Volume2 className="size-4 text-primary" />}
+              label={t("settings.sfx")}
+              help={t("settings.sfx_help")}
+              checked={sfx}
+              onChange={setSfx}
+            />
+            <ToggleRow
+              icon={<Music className="size-4 text-primary" />}
+              label={t("settings.music")}
+              help={t("settings.music_help")}
+              checked={music}
+              onChange={setMusic}
+            />
+          </CardContent>
+        </Card>
+
         <Card className="glass-card float-in">
           <CardContent className="p-5 flex items-center gap-3">
             <Sparkles className="size-5 text-primary" />
@@ -307,6 +350,29 @@ function SectionHeader({ icon, label }: { icon: React.ReactNode; label: string }
       <h2 className="font-display font-bold text-[11px] uppercase tracking-[0.25em] text-foreground">
         {label}
       </h2>
+    </div>
+  );
+}
+
+function ToggleRow({
+  icon, label, help, checked, onChange,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  help: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <div className="flex items-start justify-between gap-3">
+      <div className="min-w-0 flex gap-3">
+        <span className="mt-0.5 shrink-0">{icon}</span>
+        <div className="min-w-0">
+          <div className="font-semibold text-sm">{label}</div>
+          <p className="text-xs text-muted-foreground mt-0.5">{help}</p>
+        </div>
+      </div>
+      <Switch checked={checked} onCheckedChange={onChange} className="mt-1 shrink-0" />
     </div>
   );
 }

@@ -14,6 +14,7 @@ import appIcon from "../assets/app-icon.png";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { I18nProvider } from "@/lib/i18n";
+import { Splash } from "@/components/Splash";
 
 function NotFoundComponent() {
   return (
@@ -114,6 +115,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
+        <Splash />
         <Outlet />
         <Toaster richColors position="top-center" />
       </I18nProvider>

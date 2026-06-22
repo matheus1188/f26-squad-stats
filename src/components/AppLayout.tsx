@@ -103,10 +103,10 @@ export function AppLayout({ children, title, subtitle, action }: {
                 to={item.to as never}
                 className={cn(
                   "tap flex flex-col items-center justify-center gap-1 py-1.5 rounded-2xl text-[9px] font-semibold transition-all",
-                  active ? "neon-text" : "text-muted-foreground",
+                  active ? "neon-text bg-primary/10" : "text-muted-foreground",
                 )}
               >
-                <Icon className={cn("size-5", active && "drop-shadow-[0_0_8px_rgba(0,191,255,0.7)]")} />
+                <Icon className={cn("size-5 transition-transform", active && "drop-shadow-[0_0_8px_rgba(0,191,255,0.7)] nav-bounce")} />
                 <span className="truncate max-w-full">{item.label}</span>
               </Link>
             );

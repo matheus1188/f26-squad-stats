@@ -161,6 +161,18 @@ const en: Dict = {
   "settings.reset_confirm_body": "This permanently deletes all players, teams and matches.",
   "settings.reset_done": "All data reset",
   "settings.about": "About",
+  "settings.experience": "Experience",
+  "settings.animations": "Animations",
+  "settings.animations_help": "Smooth transitions and motion effects.",
+  "settings.haptics": "Haptic feedback",
+  "settings.haptics_help": "Subtle vibrations on supported devices.",
+  "settings.sfx": "Sound effects",
+  "settings.sfx_help": "Plays a short cue on wins and key actions.",
+  "settings.music": "Background music",
+  "settings.music_help": "Ambient stadium music.",
+  "splash.tagline": "BATTLE YOUR FRIENDS",
+  "splash.loading": "Loading the stadium…",
+  "empty.no_matches": "No matches yet",
   "settings.customization": "Customization",
   "settings.primary_color": "Primary color",
   "settings.color_blue": "Blue",
@@ -348,6 +360,18 @@ const pt: Dict = {
   "settings.reset_confirm_body": "Isso apaga permanentemente todos os jogadores, times e partidas.",
   "settings.reset_done": "Dados resetados",
   "settings.about": "Sobre",
+  "settings.experience": "Experiência",
+  "settings.animations": "Animações",
+  "settings.animations_help": "Transições suaves e efeitos de movimento.",
+  "settings.haptics": "Vibração",
+  "settings.haptics_help": "Vibrações sutis em dispositivos compatíveis.",
+  "settings.sfx": "Efeitos sonoros",
+  "settings.sfx_help": "Toca um som curto em vitórias e ações.",
+  "settings.music": "Música de fundo",
+  "settings.music_help": "Música ambiente de estádio.",
+  "splash.tagline": "DESAFIE SEUS AMIGOS",
+  "splash.loading": "Preparando o estádio…",
+  "empty.no_matches": "Nenhuma partida ainda",
   "settings.customization": "Personalização",
   "settings.primary_color": "Cor principal",
   "settings.color_blue": "Azul",
@@ -535,6 +559,18 @@ const es: Dict = {
   "settings.reset_confirm_body": "Esto elimina permanentemente todos los jugadores, equipos y partidos.",
   "settings.reset_done": "Datos restablecidos",
   "settings.about": "Acerca de",
+  "settings.experience": "Experiencia",
+  "settings.animations": "Animaciones",
+  "settings.animations_help": "Transiciones suaves y efectos de movimiento.",
+  "settings.haptics": "Vibración",
+  "settings.haptics_help": "Vibraciones sutiles en dispositivos compatibles.",
+  "settings.sfx": "Efectos de sonido",
+  "settings.sfx_help": "Suena un efecto al ganar y en acciones clave.",
+  "settings.music": "Música de fondo",
+  "settings.music_help": "Música ambiente de estadio.",
+  "splash.tagline": "DESAFÍA A TUS AMIGOS",
+  "splash.loading": "Preparando el estadio…",
+  "empty.no_matches": "No hay partidos todavía",
   "settings.customization": "Personalización",
   "settings.primary_color": "Color principal",
   "settings.color_blue": "Azul",
@@ -587,6 +623,10 @@ type Settings = {
   theme: Theme;
   appName: string;
   accent: Accent;
+  animations: boolean;
+  haptics: boolean;
+  sfx: boolean;
+  music: boolean;
 };
 
 type Ctx = Settings & {
@@ -594,6 +634,10 @@ type Ctx = Settings & {
   setTheme: (t: Theme) => void;
   setAppName: (n: string) => void;
   setAccent: (a: Accent) => void;
+  setAnimations: (v: boolean) => void;
+  setHaptics: (v: boolean) => void;
+  setSfx: (v: boolean) => void;
+  setMusic: (v: boolean) => void;
   t: (key: string, vars?: Record<string, string | number>) => string;
 };
 
@@ -643,14 +687,22 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("dark");
   const [appName, setAppNameState] = useState<string>(DEFAULT_NAME);
   const [accent, setAccentState] = useState<Accent>("blue");
+  const [animations, setAnimationsState] = useState<boolean>(true);
+  const [haptics, setHapticsState] = useState<boolean>(true);
+  const [sfx, setSfxState] = useState<boolean>(true);
+  const [music, setMusicState] = useState<boolean>(false);
 
   useEffect(() => {
-    const saved = readLS();
+    const saved = readLS() as Partial<Settings>;
     setLangState((saved.lang as Lang) ?? detectLang());
     setThemeState((saved.theme as Theme) ?? "dark");
     const savedName = saved.appName && saved.appName !== "F26 Arena" ? saved.appName : DEFAULT_NAME;
     setAppNameState(savedName);
     setAccentState((saved.accent as Accent) ?? "blue");
+    if (typeof saved.animations === "boolean") setAnimationsState(saved.animations);
+    if (typeof saved.haptics === "boolean") setHapticsState(saved.haptics);
+    if (typeof saved.sfx === "boolean") setSfxState(saved.sfx);
+    if (typeof saved.music === "boolean") setMusicState(saved.music);
     setHydrated(true);
   }, []);
 
@@ -670,22 +722,31 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!hydrated) return;
-    localStorage.setItem(LS_KEY, JSON.stringify({ lang, theme, appName, accent }));
-  }, [lang, theme, appName, accent, hydrated]);
+    document.documentElement.classList.toggle("no-anim", !animations);
+  }, [animations, hydrated]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    localStorage.setItem(LS_KEY, JSON.stringify({ lang, theme, appName, accent, animations, haptics, sfx, music }));
+  }, [lang, theme, appName, accent, animations, haptics, sfx, music, hydrated]);
 
   const value = useMemo<Ctx>(() => ({
-    lang, theme, appName, accent,
+    lang, theme, appName, accent, animations, haptics, sfx, music,
     setLang: setLangState,
     setTheme: setThemeState,
     setAppName: setAppNameState,
     setAccent: setAccentState,
+    setAnimations: setAnimationsState,
+    setHaptics: setHapticsState,
+    setSfx: setSfxState,
+    setMusic: setMusicState,
     t: (key, vars) => {
       const dict = dicts[lang] ?? en;
       let str = dict[key] ?? en[key] ?? key;
       if (vars) for (const [k, v] of Object.entries(vars)) str = str.replace(`{${k}}`, String(v));
       return str;
     },
-  }), [lang, theme, appName, accent]);
+  }), [lang, theme, appName, accent, animations, haptics, sfx, music]);
 
   return <I18nCtx.Provider value={value}>{children}</I18nCtx.Provider>;
 }
