@@ -353,3 +353,26 @@ function SectionHeader({ icon, label }: { icon: React.ReactNode; label: string }
     </div>
   );
 }
+
+function ToggleRow({
+  icon, label, help, checked, onChange,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  help: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <div className="flex items-start justify-between gap-3">
+      <div className="min-w-0 flex gap-3">
+        <span className="mt-0.5 shrink-0">{icon}</span>
+        <div className="min-w-0">
+          <div className="font-semibold text-sm">{label}</div>
+          <p className="text-xs text-muted-foreground mt-0.5">{help}</p>
+        </div>
+      </div>
+      <Switch checked={checked} onCheckedChange={onChange} className="mt-1 shrink-0" />
+    </div>
+  );
+}
