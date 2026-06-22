@@ -89,11 +89,11 @@ function Dashboard() {
       {/* Hero cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-4">
         {champion && (
-          <Card className="glass-card overflow-hidden relative pop">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20 pointer-events-none" />
+          <Card className="glass-card gold-border overflow-hidden relative pop">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#f5d142]/15 via-transparent to-[#00BFFF]/10 pointer-events-none" />
             <CardContent className="p-5 relative">
-              <div className="flex items-center gap-2 text-primary text-xs font-semibold uppercase tracking-widest">
-                <Crown className="size-4" /> {t("dashboard.champion_week")}
+              <div className="flex items-center gap-2 text-[#f5d142] text-xs font-bold uppercase tracking-widest">
+                <Crown className="size-4 crown-bob" /> {t("dashboard.champion_week")}
               </div>
               <div className="mt-3 flex items-center justify-between">
                 <div className="min-w-0">
@@ -102,7 +102,7 @@ function Dashboard() {
                     {champion.wins}W · {champion.draws}D · {champion.losses}L · {champion.points} pts
                   </div>
                 </div>
-                <div className="size-16 grid place-items-center rounded-2xl bg-gradient-to-br from-primary to-accent text-primary-foreground font-display font-black text-3xl shadow-lg">
+                <div className="size-16 grid place-items-center rounded-2xl bg-gradient-to-br from-[#f5d142] to-[#ff9a3c] text-[#02101f] font-display font-black text-3xl shadow-lg shadow-[#f5d142]/30">
                   {champion.player.name[0]?.toUpperCase()}
                 </div>
               </div>
