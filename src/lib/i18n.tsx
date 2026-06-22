@@ -2,6 +2,14 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 
 export type Lang = "en" | "pt" | "es";
 export type Theme = "light" | "dark" | "system";
+export type Accent = "blue" | "green" | "purple" | "pink";
+
+export const ACCENTS: { key: Accent; label: string; hex: string; glow: string }[] = [
+  { key: "blue",   label: "Blue",   hex: "#00BFFF", glow: "0,191,255" },
+  { key: "green",  label: "Green",  hex: "#39FF14", glow: "57,255,20" },
+  { key: "purple", label: "Purple", hex: "#b388ff", glow: "179,136,255" },
+  { key: "pink",   label: "Pink",   hex: "#ff5fa2", glow: "255,95,162" },
+];
 
 type Dict = Record<string, string>;
 
