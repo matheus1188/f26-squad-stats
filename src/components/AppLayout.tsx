@@ -1,8 +1,9 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Users, Shield, Trophy, BarChart3, Settings, Plus, History } from "lucide-react";
+import { Home, Users, Shield, Trophy, BarChart3, Settings, Plus, History, MoreHorizontal } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
+import { BrandLogo } from "@/components/BrandLogo";
 
 export function AppLayout({ children, title, subtitle, action }: {
   children: ReactNode;
@@ -25,19 +26,20 @@ export function AppLayout({ children, title, subtitle, action }: {
 
   const mobileNav = [
     { to: "/", label: t("nav.dashboard"), icon: Home, exact: true },
-    { to: "/ranking", label: t("nav.ranking"), icon: Trophy },
-    { to: "/matches/new", label: t("nav.new"), icon: Plus, fab: true },
     { to: "/matches", label: t("nav.matches"), icon: History },
-    { to: "/settings", label: t("nav.settings"), icon: Settings },
+    { to: "/matches/new", label: t("nav.new"), icon: Plus, fab: true },
+    { to: "/teams", label: t("nav.teams"), icon: Shield },
+    { to: "/ranking", label: t("nav.ranking"), icon: Trophy },
+    { to: "/stats", label: t("nav.stats"), icon: BarChart3 },
+    { to: "/settings", label: "More", icon: MoreHorizontal },
   ];
 
   return (
     <div className="min-h-screen pb-32 md:pb-10 md:pl-64">
       {/* Sidebar (desktop) */}
       <aside className="hidden md:flex fixed left-0 top-0 bottom-0 w-64 flex-col glass-card rounded-none border-y-0 border-l-0 z-30">
-        <div className="p-6">
-          <div className="font-display text-2xl font-black tracking-tight">{appName}</div>
-          <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground mt-1">{t("app.tagline")}</div>
+        <div className="p-6 border-b border-white/5">
+          <BrandLogo size="sm" />
         </div>
         <nav className="flex-1 px-3 space-y-1">
           {nav.map((item) => {
