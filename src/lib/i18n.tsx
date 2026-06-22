@@ -430,12 +430,14 @@ type Settings = {
   lang: Lang;
   theme: Theme;
   appName: string;
+  accent: Accent;
 };
 
 type Ctx = Settings & {
   setLang: (l: Lang) => void;
   setTheme: (t: Theme) => void;
   setAppName: (n: string) => void;
+  setAccent: (a: Accent) => void;
   t: (key: string, vars?: Record<string, string | number>) => string;
 };
 
@@ -466,6 +468,17 @@ function applyTheme(theme: Theme) {
   document.documentElement.classList.toggle("light", !isDark);
 }
 
+function applyAccent(accent: Accent) {
+  if (typeof document === "undefined") return;
+  const def = ACCENTS.find((a) => a.key === accent) ?? ACCENTS[0];
+  const r = document.documentElement.style;
+  r.setProperty("--primary", def.hex);
+  r.setProperty("--ring", `rgba(${def.glow},0.55)`);
+  r.setProperty("--border", `rgba(${def.glow},0.18)`);
+  r.setProperty("--neon-blue", def.hex);
+  r.setProperty("--accent-glow", def.glow);
+}
+
 const DEFAULT_NAME = "GOLAÇO CUP";
 
 export function I18nProvider({ children }: { children: ReactNode }) {
@@ -473,6 +486,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("en");
   const [theme, setThemeState] = useState<Theme>("dark");
   const [appName, setAppNameState] = useState<string>(DEFAULT_NAME);
+  const [accent, setAccentState] = useState<Accent>("blue");
 
   useEffect(() => {
     const saved = readLS();
@@ -480,6 +494,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     setThemeState((saved.theme as Theme) ?? "dark");
     const savedName = saved.appName && saved.appName !== "F26 Arena" ? saved.appName : DEFAULT_NAME;
     setAppNameState(savedName);
+    setAccentState((saved.accent as Accent) ?? "blue");
     setHydrated(true);
   }, []);
 
@@ -494,14 +509,20 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!hydrated) return;
-    localStorage.setItem(LS_KEY, JSON.stringify({ lang, theme, appName }));
-  }, [lang, theme, appName, hydrated]);
+    applyAccent(accent);
+  }, [accent, hydrated]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    localStorage.setItem(LS_KEY, JSON.stringify({ lang, theme, appName, accent }));
+  }, [lang, theme, appName, accent, hydrated]);
 
   const value = useMemo<Ctx>(() => ({
-    lang, theme, appName,
+    lang, theme, appName, accent,
     setLang: setLangState,
     setTheme: setThemeState,
     setAppName: setAppNameState,
+    setAccent: setAccentState,
     t: (key, vars) => {
       const dict = dicts[lang] ?? en;
       let str = dict[key] ?? en[key] ?? key;
